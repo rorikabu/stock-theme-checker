@@ -335,64 +335,87 @@ def _jp_file_save(price_df, volume_df):
 
 
 def _jp_do_fetch(codes):
-    """J-Quants V2 APIから株価データを取得（スレッドセーフ、デコレータなし）"""
+    """J-Quants V2 APIから株価データを一括取得（日付ベース・高速版）
+    1日分の全銘柄を1リクエストで取得 → 約250リクエストで完了（2〜3分）
+    """
     headers = {"x-api-key": JQUANTS_API_KEY}
-    today = datetime.today()
-    start_str = (today - timedelta(days=400)).strftime("%Y%m%d")
-    candidate = today.strftime("%Y%m%d")
-
-    # サブスクリプション終了日を検出
-    try:
-        resp = requests.get(
-            "https://api.jquants.com/v2/equities/bars/daily",
-            params={"code": "6920", "from": candidate, "to": candidate},
-            headers=headers, timeout=10,
-        )
-        if resp.status_code == 400:
-            m = re.search(r"~ (\d{4}-\d{2}-\d{2})", resp.json().get("message", ""))
-            end_str = m.group(1).replace("-", "") if m else candidate
-        else:
-            end_str = candidate
-    except Exception:
-        end_str = candidate
-    time.sleep(1.5)
-
-    price_dict = {}
-    volume_dict = {}
-    total = len(codes)
+    today = datetime.today().date()
+    start_date = today - timedelta(days=400)
+    code_set = set(codes)
     state = _jp_state()
-    for i, code in enumerate(codes):
-        if i % 50 == 0:
-            state["progress"] = f"{i}/{total}"
-        for attempt in range(2):
+
+    # 営業日リスト（土日除外、祝日はAPI応答が空で自動スキップ）
+    business_days = [
+        start_date + timedelta(days=i)
+        for i in range(401)
+        if (start_date + timedelta(days=i)).weekday() < 5
+    ]
+    total_days = len(business_days)
+
+    daily_price = {}
+    daily_volume = {}
+
+    for idx, d in enumerate(business_days):
+        date_str = d.strftime("%Y%m%d")
+        if idx % 10 == 0:
+            state["progress"] = f"{idx}/{total_days}日"
+
+        for attempt in range(4):
             try:
                 resp = requests.get(
                     "https://api.jquants.com/v2/equities/bars/daily",
-                    params={"code": code, "from": start_str, "to": end_str},
-                    headers=headers, timeout=10,
+                    params={"date": date_str},
+                    headers=headers, timeout=30,
                 )
                 if resp.status_code == 429:
-                    time.sleep(30)
+                    time.sleep(2 ** attempt)
                     continue
                 if resp.status_code != 200:
                     break
-                quotes = resp.json().get("data", [])
-                if not quotes:
+                records = resp.json().get("data", [])
+                if not records:
                     break
-                df_c = pd.DataFrame(quotes)
-                df_c["Date"] = pd.to_datetime(df_c["Date"])
-                df_c = df_c.set_index("Date").sort_index()
-                price_dict[code] = df_c["AdjC"]
-                if "AdjVo" in df_c.columns:
-                    volume_dict[code] = df_c["AdjVo"]
+
+                day_prices = {}
+                day_volumes = {}
+                for item in records:
+                    code_4 = item.get("Code", "")[:4]
+                    if code_4 in code_set:
+                        adj_c = item.get("AdjC")
+                        adj_v = item.get("AdjVo")
+                        if adj_c is not None:
+                            day_prices[code_4] = float(adj_c)
+                        if adj_v is not None:
+                            day_volumes[code_4] = float(adj_v)
+
+                if day_prices:
+                    daily_price[d.isoformat()] = day_prices
+                if day_volumes:
+                    daily_volume[d.isoformat()] = day_volumes
                 break
             except Exception:
-                break
-        if i < len(codes) - 1:
-            time.sleep(0.3)
+                time.sleep(1)
+                continue
+        time.sleep(0.5)
 
-    price_df = pd.DataFrame(price_dict) if price_dict else pd.DataFrame(columns=list(codes))
-    volume_df = pd.DataFrame(volume_dict) if volume_dict else pd.DataFrame(columns=list(codes))
+    state["progress"] = "データ構築中..."
+
+    if daily_price:
+        price_df = pd.DataFrame(daily_price).T
+        price_df.index = pd.to_datetime(price_df.index)
+        price_df.index.name = "Date"
+        price_df = price_df.sort_index().astype(float)
+    else:
+        price_df = pd.DataFrame(columns=list(codes))
+
+    if daily_volume:
+        volume_df = pd.DataFrame(daily_volume).T
+        volume_df.index = pd.to_datetime(volume_df.index)
+        volume_df.index.name = "Date"
+        volume_df = volume_df.sort_index().astype(float)
+    else:
+        volume_df = pd.DataFrame(columns=list(codes))
+
     return price_df, volume_df
 
 
