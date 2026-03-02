@@ -148,8 +148,8 @@ _WEIGHT_MULTIPLIER = {4: 4.0, 3: 2.0, 2: 1.0, 1: 0.5}
 # 銘柄数が少ないテーマの補正強度（大きいほど0%に引き戻す力が強い）
 _SHRINKAGE_M = 5
 
-JP_PERIODS = {"Now": "rt", "1D": 2, "5D": 6, "1M": 22, "3M": 66}
-PERIODS     = {"1D": 2, "5D": 6, "1M": 22, "3M": 66}  # 米国株用
+JP_PERIODS = {"Now": "rt", "1D": 2, "5D": 6, "1M": 22}
+PERIODS     = {"1D": 2, "5D": 6, "1M": 22}  # 米国株用
 JQUANTS_API_KEY = st.secrets["jquants"]["api_key"]
 
 
@@ -282,7 +282,7 @@ def _us_cache_save(df: pd.DataFrame):
 
 def _fetch_us_yf(tickers: tuple) -> pd.DataFrame:
     """yfinance で銘柄を分割取得（レート制限回避）。"""
-    start = datetime.today() - timedelta(days=120)
+    start = datetime.today() - timedelta(days=45)
     state = _us_state()
     batch_size = 50
     all_dfs = []
@@ -370,14 +370,14 @@ def _jp_do_fetch(codes):
     """
     headers = {"x-api-key": JQUANTS_API_KEY}
     today = datetime.today().date()
-    start_date = today - timedelta(days=120)
+    start_date = today - timedelta(days=45)
     code_set = set(codes)
     state = _jp_state()
 
     # 営業日リスト（土日除外、祝日はAPI応答が空で自動スキップ）
     business_days = [
         start_date + timedelta(days=i)
-        for i in range(121)
+        for i in range(46)
         if (start_date + timedelta(days=i)).weekday() < 5
     ]
     total_days = len(business_days)
