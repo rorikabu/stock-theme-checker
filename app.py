@@ -1167,19 +1167,19 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# ボタン行（Streamlitの列だが少数で横並び維持しやすい）
+# ボタン行（全て統一デザイン）
 _n_btns = 4 if _tachi_has_secrets else 3
 _btn_cols = st.columns(_n_btns)
 with _btn_cols[0]:
     _compact_label = "🃏" if st.session_state.compact_mode else "📋"
-    if st.button(_compact_label, use_container_width=True, help="ざら場モード切替"):
+    if st.button(_compact_label, help="ざら場モード切替"):
         st.session_state.compact_mode = not st.session_state.compact_mode
         build_compact_list.clear()
         _load_css.clear()
         st.rerun()
 with _btn_cols[1]:
     _dark_label = "☀️" if st.session_state.dark_mode else "🌙"
-    if st.button(_dark_label, use_container_width=True):
+    if st.button(_dark_label):
         st.session_state.dark_mode = not st.session_state.dark_mode
         build_theme_list.clear()
         build_surge_list.clear()
@@ -1189,42 +1189,34 @@ with _btn_cols[1]:
 if _tachi_has_secrets:
     with _btn_cols[2]:
         _tachi_label = "🟢" if _tachi_st["status"] == "connected" else "🔌"
-        with st.popover(_tachi_label, use_container_width=True):
-            if _tachi_st["status"] == "connected":
-                st.markdown("**● 接続中**")
-            elif _tachi_st["status"] == "need_auth":
-                st.markdown("📞 **電話認証が必要です**")
-                st.caption("認証後にボタンを押してください")
-                if st.button("認証完了", key="btn_auth_done"):
-                    uid = st.secrets["tachibana"]["user_id"]
-                    pwd = st.secrets["tachibana"]["password"]
-                    status, msg, price_url = _tachibana_login(uid, pwd)
-                    if status == "ok" and price_url:
-                        _tachi_st["price_url"] = price_url
-                        _tachi_st["status"] = "connected"
-                        fetch_tachibana_prices.clear()
-                        st.rerun()
-                    else:
-                        st.error(msg)
-            else:
-                st.markdown("○ **未接続**")
-                if st.button("ログイン", key="btn_tachi_login"):
-                    uid = st.secrets["tachibana"]["user_id"]
-                    pwd = st.secrets["tachibana"]["password"]
-                    with st.spinner("ログイン中..."):
-                        status, msg, price_url = _tachibana_login(uid, pwd)
-                    if status == "ok" and price_url:
-                        _tachi_st["price_url"] = price_url
-                        _tachi_st["status"] = "connected"
-                        fetch_tachibana_prices.clear()
-                        st.rerun()
-                    elif status == "need_auth":
-                        _tachi_st["status"] = "need_auth"
-                        st.rerun()
-                    else:
-                        st.error(msg)
+        if st.button(_tachi_label, help="立花証券ログイン"):
+            if _tachi_st["status"] == "need_auth":
+                uid = st.secrets["tachibana"]["user_id"]
+                pwd = st.secrets["tachibana"]["password"]
+                status, msg, price_url = _tachibana_login(uid, pwd)
+                if status == "ok" and price_url:
+                    _tachi_st["price_url"] = price_url
+                    _tachi_st["status"] = "connected"
+                    fetch_tachibana_prices.clear()
+                    st.rerun()
+                else:
+                    st.toast(f"認証エラー: {msg}")
+            elif _tachi_st["status"] != "connected":
+                uid = st.secrets["tachibana"]["user_id"]
+                pwd = st.secrets["tachibana"]["password"]
+                status, msg, price_url = _tachibana_login(uid, pwd)
+                if status == "ok" and price_url:
+                    _tachi_st["price_url"] = price_url
+                    _tachi_st["status"] = "connected"
+                    fetch_tachibana_prices.clear()
+                    st.rerun()
+                elif status == "need_auth":
+                    _tachi_st["status"] = "need_auth"
+                    st.toast("📞 電話認証後にもう一度押してください")
+                else:
+                    st.toast(f"エラー: {msg}")
 with _btn_cols[-1]:
-    if st.button("↺ 更新", use_container_width=True):
+    if st.button("↺"):
         reload_jp_themes()
         fetch_tachibana_prices.clear()
         build_theme_list.clear()
