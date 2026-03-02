@@ -265,11 +265,11 @@ h1 {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 11px 16px 11px 14px;
+    padding: 8px 14px 8px 10px;
     background: var(--bg);
     border: none;
-    border-radius: 14px;
-    margin-bottom: 8px;
+    border-radius: 12px;
+    margin-bottom: 6px;
     cursor: pointer;
     user-select: none;
     box-shadow: 8px 8px 16px var(--shadow-dark), -8px -8px 16px var(--shadow-light);
@@ -284,19 +284,19 @@ h1 {
     box-shadow: 8px 8px 16px var(--shadow-dark), -8px -8px 16px var(--shadow-light);
 }
 
-.tl-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.tl-left { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 
 .tl-badge {
-    width: 32px; height: 32px;
+    width: 26px; height: 26px;
     background: var(--bg);
     border: none;
     border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
-    font-size: 0.72rem; font-weight: 700; color: var(--accent);
+    font-size: 0.62rem; font-weight: 700; color: var(--accent);
     flex-shrink: 0;
-    box-shadow: 4px 4px 8px var(--shadow-dark), -4px -4px 8px var(--shadow-light);
+    box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
 }
-.tl-name { font-size: 1rem; font-weight: 700; color: var(--text); white-space: nowrap; }
+.tl-name { font-size: 0.88rem; font-weight: 700; color: var(--text); white-space: nowrap; }
 .tl-tag {
     font-size: 0.58rem; font-weight: 600;
     padding: 2px 7px;
@@ -306,9 +306,9 @@ h1 {
     box-shadow: 2px 2px 4px var(--shadow-dark), -2px -2px 4px var(--shadow-light);
 }
 
-.tl-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.tl-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 .tl-ret {
-    font-size: 1.1rem; font-weight: 800;
+    font-size: 0.95rem; font-weight: 800;
     letter-spacing: -0.02em;
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
