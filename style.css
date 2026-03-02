@@ -209,6 +209,41 @@ h1 {
     outline: none !important;
 }
 
+/* ─── ヘッダーpills（Neumorphism） ─── */
+[data-testid="stButtonGroup"] [data-baseweb="button-group"] {
+    background: var(--bg) !important;
+    border-radius: 12px !important;
+    padding: 3px 4px !important;
+    gap: 0 !important;
+    box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light) !important;
+}
+[data-testid="stButtonGroup"] button {
+    background: transparent !important;
+    border: none !important;
+    border-radius: 8px !important;
+    color: var(--text-muted) !important;
+    font-size: 0.88rem !important;
+    font-weight: 600 !important;
+    padding: 7px 14px !important;
+    min-height: unset !important;
+    box-shadow: none !important;
+    transition: all 0.2s ease !important;
+}
+[data-testid="stButtonGroup"] button:hover {
+    color: var(--text-sub) !important;
+    background: rgba(0,0,0,0.015) !important;
+}
+[data-testid="stButtonGroup"] button[aria-checked="true"] {
+    background: var(--bg) !important;
+    color: var(--accent) !important;
+    font-weight: 700 !important;
+    box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light) !important;
+}
+[data-testid="stButtonGroup"] button:active {
+    box-shadow: inset 2px 2px 5px var(--shadow-dark), inset -2px -2px 5px var(--shadow-light) !important;
+    color: var(--accent) !important;
+}
+
 /* ─── テーマリスト（Neumorphism） ─── */
 .tl-wrap {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
