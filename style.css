@@ -1,0 +1,415 @@
+/* ── テーマ変数 ── */
+:root {
+  /* ベース */
+  --bg:           #ecf0f3;
+  --text:         #2d3748;
+  --text-sub:     #4a5568;
+  --text-muted:   #8a94a6;
+  --border:       #dde1e6;
+  /* Neumorphism 影 */
+  --shadow-dark:  #c8ccd1;
+  --shadow-light: #ffffff;
+  /* アクセント */
+  --accent:       #6366f1;
+  --accent-hover: #4f46e5;
+  /* 値動き */
+  --up:           #ef4444;
+  --down:         #06b6d4;
+  /* 出来高 */
+  --surge-high:   #f59e0b;
+  --surge-mid:    #fb923c;
+}
+
+/* ── ダークモード変数 ── */
+.dark-mode {
+  --bg:           #1e2328;
+  --text:         #e2e8f0;
+  --text-sub:     #cbd5e0;
+  --text-muted:   #94a3b8;
+  --border:       #2d3748;
+  --shadow-dark:  #161a1e;
+  --shadow-light: #262c32;
+  --accent:       #818cf8;
+  --accent-hover: #a5b4fc;
+  --up:           #f87171;
+  --down:         #22d3ee;
+  --surge-high:   #fbbf24;
+  --surge-mid:    #fb923c;
+}
+
+/* ── ベース ── */
+html, body,
+[data-testid="stAppViewContainer"],
+[data-testid="stMain"],
+.main {
+    background-color: var(--bg) !important;
+    color: var(--text) !important;
+}
+[data-testid="stHeader"] {
+    display: none !important;
+}
+.block-container {
+    padding: 0.6rem 1rem 3rem !important;
+    max-width: 740px !important;
+    margin: 0 auto !important;
+}
+#MainMenu, footer, [data-testid="stToolbar"] { display: none !important; }
+
+/* ── ロゴ ── */
+.logo-img {
+    height: 36px;
+    display: block;
+}
+/* ── ヘッダー区切り線 ── */
+.header-line {
+    border-bottom: 1px solid var(--border);
+    margin: 0.3rem 0 0.5rem;
+}
+
+h1 {
+    color: var(--text) !important;
+    font-size: 1.2rem !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.02em;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+/* ─── タブ（Neumorphism：浮き出しバー + 選択凹み） ─── */
+[data-baseweb="tab-list"] {
+    background: var(--bg) !important;
+    border-bottom: none !important;
+    gap: 0 !important;
+    margin-bottom: 8px !important;
+    padding: 5px 6px !important;
+    border-radius: 16px !important;
+    box-shadow: 6px 6px 12px var(--shadow-dark), -6px -6px 12px var(--shadow-light) !important;
+}
+[data-baseweb="tab"] {
+    background: transparent !important;
+    border: none !important;
+    border-bottom: none !important;
+    color: var(--text-muted) !important;
+    font-size: 0.88rem !important;
+    font-weight: 600 !important;
+    padding: 10px 24px !important;
+    border-radius: 12px !important;
+    box-shadow: none !important;
+    transition: all 0.2s ease !important;
+}
+[data-baseweb="tab"]:hover {
+    color: var(--text-sub) !important;
+    background: rgba(0,0,0,0.015) !important;
+}
+[data-baseweb="tab"][aria-selected="true"] {
+    color: var(--accent) !important;
+    border-bottom: none !important;
+    background: var(--bg) !important;
+    box-shadow: inset 3px 3px 7px var(--shadow-dark), inset -3px -3px 7px var(--shadow-light) !important;
+    font-weight: 700 !important;
+}
+[data-baseweb="tab-highlight"],
+[data-baseweb="tab-border"] { display: none !important; }
+[data-testid="stTabContent"] {
+    padding-top: 14px !important;
+    border-top: none !important;
+}
+
+/* ─── 期間ラジオ → ピルボタン（Neumorphism：バー式） ─── */
+[data-testid="stRadio"] [data-testid="stWidgetLabel"] { display: none !important; }
+[data-testid="stRadio"] > div > div {
+    background: var(--bg);
+    border: none;
+    border-radius: 12px;
+    padding: 3px 4px;
+    gap: 0 !important;
+    width: 100%;
+    box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light);
+    flex-wrap: nowrap !important;
+    display: flex !important;
+}
+[data-testid="stRadio"] label {
+    background: transparent !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 5px 9px !important;
+    color: var(--text-muted) !important;
+    font-size: 0.76rem !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    min-height: unset !important;
+    box-shadow: none !important;
+    transition: all 0.2s ease !important;
+    white-space: nowrap !important;
+    flex: 1 1 0 !important;
+    text-align: center !important;
+    justify-content: center !important;
+    min-width: 0 !important;
+}
+[data-testid="stRadio"] label:hover {
+    color: var(--text-sub) !important;
+    background: rgba(0,0,0,0.015) !important;
+}
+[data-testid="stRadio"] label:has(input:checked) {
+    background: var(--bg) !important;
+    color: var(--accent) !important;
+    font-weight: 700 !important;
+    box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light) !important;
+}
+/* ラジオ丸を完全に消す */
+[data-testid="stRadio"] label span:first-child,
+[data-testid="stRadio"] label > div:first-child,
+[data-testid="stRadio"] input[type="radio"] { display: none !important; }
+[data-testid="stRadio"] label p {
+    margin: 0 !important;
+    line-height: 1.2 !important;
+    color: inherit !important;
+}
+/* 順序ラジオ（ベスト/ワースト）を均等幅に — 上書き不要、共通で対応済み */
+[data-testid="stRadio"] > div > div {
+    width: 100% !important;
+}
+[data-testid="stRadio"] > div > div > label {
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+    justify-content: center !important;
+}
+
+/* ─── 更新ボタン（Neumorphism） ─── */
+[data-testid="stButton"] button {
+    background: var(--bg) !important;
+    border: none !important;
+    border-radius: 12px !important;
+    color: var(--accent) !important;
+    font-weight: 600 !important;
+    font-size: 0.85rem !important;
+    padding: 8px 18px !important;
+    box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light) !important;
+    transition: all 0.2s ease !important;
+}
+[data-testid="stButton"] button:hover {
+    box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light) !important;
+    color: var(--accent-hover) !important;
+}
+[data-testid="stButton"] button:active,
+[data-testid="stButton"] button:focus {
+    box-shadow: inset 3px 3px 7px var(--shadow-dark), inset -3px -3px 7px var(--shadow-light) !important;
+    color: var(--accent) !important;
+    outline: none !important;
+}
+
+/* ─── テーマリスト（Neumorphism） ─── */
+.tl-wrap {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+    margin-top: 14px;
+}
+.tl-chk { display: none; }
+
+.tl-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px 16px 16px;
+    background: var(--bg);
+    border: none;
+    border-radius: 16px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    user-select: none;
+    box-shadow: 8px 8px 16px var(--shadow-dark), -8px -8px 16px var(--shadow-light);
+    transition: box-shadow 0.25s ease;
+}
+.tl-row:hover {
+    box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light);
+}
+.tl-chk:checked ~ .tl-row {
+    border-radius: 16px 16px 0 0;
+    margin-bottom: 0;
+    box-shadow: 8px 8px 16px var(--shadow-dark), -8px -8px 16px var(--shadow-light);
+}
+
+.tl-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+.tl-badge {
+    width: 32px; height: 32px;
+    background: var(--bg);
+    border: none;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.72rem; font-weight: 700; color: var(--accent);
+    flex-shrink: 0;
+    box-shadow: 4px 4px 8px var(--shadow-dark), -4px -4px 8px var(--shadow-light);
+}
+.tl-name { font-size: 1rem; font-weight: 700; color: var(--text); white-space: nowrap; }
+.tl-tag {
+    font-size: 0.68rem; font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 100px;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+    box-shadow: 2px 2px 4px var(--shadow-dark), -2px -2px 4px var(--shadow-light);
+}
+
+.tl-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.tl-ret {
+    font-size: 1.1rem; font-weight: 800;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+.tl-chevron {
+    font-size: 0.8rem; color: var(--text-muted);
+    display: inline-block;
+    transition: transform 0.25s ease;
+    line-height: 1;
+}
+.tl-chk:checked ~ .tl-row .tl-chevron {
+    transform: rotate(180deg);
+    color: var(--accent);
+}
+
+.tl-panel {
+    display: none;
+    background: var(--bg);
+    border: none;
+    border-radius: 0 0 16px 16px;
+    padding: 6px 20px 14px 16px;
+    margin-bottom: 12px;
+    box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light);
+}
+.tl-chk:checked ~ .tl-panel { display: block; }
+
+.tl-stock {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--border);
+}
+.tl-stock:last-child { border-bottom: none; }
+.tl-ticker { font-size: 0.87rem; font-weight: 700; color: var(--text); letter-spacing: 0.04em; }
+.tl-sname  { font-size: 0.78rem; font-weight: 700; color: var(--text-sub); margin-left: 6px; }
+.tl-stock-right {
+    display: flex; align-items: center; gap: 8px; flex-shrink: 0;
+}
+.tl-price  {
+    font-size: 0.8rem; font-variant-numeric: tabular-nums;
+    color: var(--text-muted); white-space: nowrap;
+}
+.tl-change {
+    font-size: 0.8rem; font-variant-numeric: tabular-nums;
+    color: var(--text-muted); white-space: nowrap;
+}
+.tl-sret   { font-size: 0.87rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+.tl-contrib {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px; height: 15px;
+    border-radius: 4px;
+    font-size: 0.62rem;
+    font-weight: 800;
+    letter-spacing: 0.01em;
+    flex-shrink: 0;
+}
+
+.stCaption { color: var(--text-muted) !important; font-size: 0.7rem !important; }
+
+/* ─── コンパクトモード（ざら場用） ─── */
+.cp-wrap {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+    display: flex;
+    gap: 16px;
+    margin-top: 8px;
+}
+.cp-col {
+    flex: 1;
+    min-width: 0;
+}
+.cp-chk { display: none !important; }
+
+.cp-row {
+    display: flex;
+    align-items: center;
+    height: 28px;
+    padding: 0 8px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s ease;
+}
+.cp-row:hover {
+    background: rgba(99,102,241,0.06);
+}
+.cp-chk:checked ~ .cp-row {
+    background: rgba(99,102,241,0.08);
+}
+
+.cp-rank {
+    width: 24px;
+    text-align: right;
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    flex-shrink: 0;
+    margin-right: 6px;
+}
+.cp-name {
+    flex: 1;
+    font-size: 0.76rem;
+    font-weight: 700;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-right: 6px;
+}
+.cp-ret {
+    font-size: 0.76rem;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+.cp-chevron {
+    font-size: 0.56rem;
+    color: var(--text-muted);
+    margin-left: 4px;
+    display: inline-block;
+    transition: transform 0.2s ease;
+    line-height: 1;
+    flex-shrink: 0;
+}
+.cp-chk:checked ~ .cp-row .cp-chevron {
+    transform: rotate(180deg);
+    color: var(--accent);
+}
+
+.cp-panel {
+    display: none;
+    border-left: 3px solid var(--accent);
+    padding: 2px 8px 4px 10px;
+    margin-bottom: 2px;
+    background: var(--bg);
+}
+.cp-chk:checked ~ .cp-panel { display: block; }
+
+.cp-stock {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 3px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.74rem;
+}
+.cp-stock:last-child { border-bottom: none; }
+.cp-stock-left { display: flex; align-items: center; gap: 5px; }
+.cp-stock-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.cp-stock .tl-ticker { font-size: 0.74rem; }
+.cp-stock .tl-sname  { font-size: 0.68rem; margin-left: 4px; }
+.cp-stock .tl-price  { font-size: 0.7rem; }
+.cp-stock .tl-change { font-size: 0.7rem; }
+.cp-stock .tl-sret   { font-size: 0.74rem; }
+.cp-stock .tl-contrib { width: 16px; height: 14px; font-size: 0.58rem; }

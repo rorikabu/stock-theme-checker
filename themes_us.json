@@ -1,0 +1,5086 @@
+{
+  "AIサーバ：受託製造": {
+    "category": "テクノロジー",
+    "parent_theme": "データセンター",
+    "stocks": [
+      {
+        "ticker": "CLS",
+        "weight": 2
+      },
+      {
+        "ticker": "FLEX",
+        "weight": 2
+      },
+      {
+        "ticker": "JBL",
+        "weight": 2
+      },
+      {
+        "ticker": "SANM",
+        "weight": 2
+      }
+    ]
+  },
+  "AIサーバ：自社ブランド": {
+    "category": "テクノロジー",
+    "parent_theme": "データセンター",
+    "stocks": [
+      {
+        "ticker": "DELL",
+        "weight": 2
+      },
+      {
+        "ticker": "HPE",
+        "weight": 2
+      },
+      {
+        "ticker": "NTAP",
+        "weight": 2
+      },
+      {
+        "ticker": "PSTG",
+        "weight": 2
+      },
+      {
+        "ticker": "SMCI",
+        "weight": 2
+      }
+    ]
+  },
+  "AI創薬": {
+    "category": "ヘルスケア",
+    "parent_theme": "医療AI",
+    "stocks": [
+      {
+        "ticker": "ABSI",
+        "weight": 2
+      },
+      {
+        "ticker": "CERT",
+        "weight": 2
+      },
+      {
+        "ticker": "GH",
+        "weight": 2
+      },
+      {
+        "ticker": "RLAY",
+        "weight": 2
+      },
+      {
+        "ticker": "RXRX",
+        "weight": 2
+      },
+      {
+        "ticker": "SDGR",
+        "weight": 2
+      },
+      {
+        "ticker": "TEM",
+        "weight": 2
+      }
+    ]
+  },
+  "AI半導体：コア銘柄": {
+    "category": "テクノロジー",
+    "parent_theme": "半導体",
+    "stocks": [
+      {
+        "ticker": "AMD",
+        "weight": 2
+      },
+      {
+        "ticker": "AVGO",
+        "weight": 2
+      },
+      {
+        "ticker": "MRVL",
+        "weight": 2
+      },
+      {
+        "ticker": "MU",
+        "weight": 2
+      },
+      {
+        "ticker": "NVDA",
+        "weight": 2
+      }
+    ]
+  },
+  "Appleインテリジェンス": {
+    "category": "テクノロジー",
+    "parent_theme": "エッジAI",
+    "stocks": [
+      {
+        "ticker": "AAPL",
+        "weight": 2
+      },
+      {
+        "ticker": "AMKR",
+        "weight": 2
+      },
+      {
+        "ticker": "ARM",
+        "weight": 2
+      },
+      {
+        "ticker": "GLW",
+        "weight": 2
+      },
+      {
+        "ticker": "SWKS",
+        "weight": 2
+      },
+      {
+        "ticker": "TSM",
+        "weight": 2
+      }
+    ]
+  },
+  "BNPL": {
+    "category": "金融",
+    "parent_theme": "フィンテック",
+    "stocks": [
+      {
+        "ticker": "AFRM",
+        "weight": 2
+      },
+      {
+        "ticker": "KLAR",
+        "weight": 2
+      },
+      {
+        "ticker": "SEZL",
+        "weight": 2
+      }
+    ]
+  },
+  "CDN": {
+    "category": "テクノロジー",
+    "parent_theme": "ITサービス",
+    "stocks": [
+      {
+        "ticker": "AKAM",
+        "weight": 2
+      },
+      {
+        "ticker": "FSLY",
+        "weight": 2
+      },
+      {
+        "ticker": "NET",
+        "weight": 2
+      }
+    ]
+  },
+  "CPU": {
+    "category": "テクノロジー",
+    "parent_theme": "データセンター",
+    "stocks": [
+      {
+        "ticker": "AMD",
+        "weight": 2
+      },
+      {
+        "ticker": "ARM",
+        "weight": 2
+      },
+      {
+        "ticker": "INTC",
+        "weight": 2
+      }
+    ]
+  },
+  "DRAM品薄": {
+    "category": "テクノロジー",
+    "parent_theme": "データセンター",
+    "stocks": [
+      {
+        "ticker": "AMAT",
+        "weight": 2
+      },
+      {
+        "ticker": "AMKR",
+        "weight": 2
+      },
+      {
+        "ticker": "KLAC",
+        "weight": 2
+      },
+      {
+        "ticker": "LRCX",
+        "weight": 2
+      },
+      {
+        "ticker": "MU",
+        "weight": 2
+      },
+      {
+        "ticker": "ONTO",
+        "weight": 2
+      },
+      {
+        "ticker": "RMBS",
+        "weight": 2
+      }
+    ]
+  },
+  "IOT×エッジAI": {
+    "category": "テクノロジー",
+    "parent_theme": "半導体",
+    "stocks": [
+      {
+        "ticker": "AMBA",
+        "weight": 2
+      },
+      {
+        "ticker": "AMBQ",
+        "weight": 2
+      },
+      {
+        "ticker": "LSCC",
+        "weight": 2
+      },
+      {
+        "ticker": "NXPI",
+        "weight": 2
+      },
+      {
+        "ticker": "QCOM",
+        "weight": 2
+      },
+      {
+        "ticker": "SYNA",
+        "weight": 2
+      }
+    ]
+  },
+  "OpenAI関連": {
+    "category": "テクノロジー",
+    "parent_theme": "AIプロバイダ",
+    "stocks": [
+      {
+        "ticker": "AMD",
+        "weight": 2
+      },
+      {
+        "ticker": "AVGO",
+        "weight": 2
+      },
+      {
+        "ticker": "MSFT",
+        "weight": 2
+      },
+      {
+        "ticker": "NVDA",
+        "weight": 2
+      },
+      {
+        "ticker": "ORCL",
+        "weight": 2
+      }
+    ]
+  },
+  "PE・プライベトクレジト": {
+    "category": "金融",
+    "parent_theme": "投資",
+    "stocks": [
+      {
+        "ticker": "APO",
+        "weight": 2
+      },
+      {
+        "ticker": "ARES",
+        "weight": 2
+      },
+      {
+        "ticker": "BX",
+        "weight": 2
+      },
+      {
+        "ticker": "CG",
+        "weight": 2
+      },
+      {
+        "ticker": "KKR",
+        "weight": 2
+      },
+      {
+        "ticker": "OWL",
+        "weight": 2
+      },
+      {
+        "ticker": "TPG",
+        "weight": 2
+      }
+    ]
+  },
+  "REIT": {
+    "category": "不動産",
+    "parent_theme": "不動産",
+    "stocks": [
+      {
+        "ticker": "AMT",
+        "weight": 2
+      },
+      {
+        "ticker": "CCI",
+        "weight": 2
+      },
+      {
+        "ticker": "DLR",
+        "weight": 2
+      },
+      {
+        "ticker": "EQIX",
+        "weight": 2
+      },
+      {
+        "ticker": "O",
+        "weight": 2
+      },
+      {
+        "ticker": "PLD",
+        "weight": 2
+      },
+      {
+        "ticker": "SPG",
+        "weight": 2
+      },
+      {
+        "ticker": "STAG",
+        "weight": 2
+      },
+      {
+        "ticker": "VTR",
+        "weight": 2
+      },
+      {
+        "ticker": "WELL",
+        "weight": 2
+      }
+    ]
+  },
+  "eVTOL": {
+    "category": "テクノロジー",
+    "parent_theme": "モビリティ",
+    "stocks": [
+      {
+        "ticker": "ACHR",
+        "weight": 2
+      },
+      {
+        "ticker": "EVEX",
+        "weight": 2
+      },
+      {
+        "ticker": "EVTL",
+        "weight": 2
+      },
+      {
+        "ticker": "JOBY",
+        "weight": 2
+      },
+      {
+        "ticker": "VTOL",
+        "weight": 2
+      }
+    ]
+  },
+  "おもちゃ": {
+    "category": "消費者一般",
+    "parent_theme": "レジャー製品",
+    "stocks": [
+      {
+        "ticker": "HAS",
+        "weight": 2
+      },
+      {
+        "ticker": "MAT",
+        "weight": 2
+      }
+    ]
+  },
+  "アウトドア製品": {
+    "category": "消費者一般",
+    "parent_theme": "レジャー製品",
+    "stocks": [
+      {
+        "ticker": "BC",
+        "weight": 2
+      },
+      {
+        "ticker": "GOLF",
+        "weight": 2
+      },
+      {
+        "ticker": "THO",
+        "weight": 2
+      }
+    ]
+  },
+  "アクティブウェア": {
+    "category": "消費者一般",
+    "parent_theme": "アパレル",
+    "stocks": [
+      {
+        "ticker": "AS",
+        "weight": 2
+      },
+      {
+        "ticker": "BIRK",
+        "weight": 2
+      },
+      {
+        "ticker": "DECK",
+        "weight": 2
+      },
+      {
+        "ticker": "LULU",
+        "weight": 2
+      },
+      {
+        "ticker": "NKE",
+        "weight": 2
+      },
+      {
+        "ticker": "ONON",
+        "weight": 2
+      }
+    ]
+  },
+  "アグリビジネス": {
+    "category": "消費者必需品",
+    "parent_theme": "食品",
+    "stocks": [
+      {
+        "ticker": "ADM",
+        "weight": 2
+      },
+      {
+        "ticker": "BG",
+        "weight": 2
+      }
+    ]
+  },
+  "アナログ半導体：センサ": {
+    "category": "テクノロジー",
+    "parent_theme": "半導体",
+    "stocks": [
+      {
+        "ticker": "ALGM",
+        "weight": 2
+      },
+      {
+        "ticker": "MCHP",
+        "weight": 2
+      },
+      {
+        "ticker": "NXPI",
+        "weight": 2
+      },
+      {
+        "ticker": "SLAB",
+        "weight": 2
+      }
+    ]
+  },
+  "アナログ半導体：パワー": {
+    "category": "テクノロジー",
+    "parent_theme": "半導体",
+    "stocks": [
+      {
+        "ticker": "MPWR",
+        "weight": 2
+      },
+      {
+        "ticker": "ON",
+        "weight": 2
+      }
+    ]
+  },
+  "アナログ半導体：汎用": {
+    "category": "テクノロジー",
+    "parent_theme": "半導体",
+    "stocks": [
+      {
+        "ticker": "ADI",
+        "weight": 2
+      },
+      {
+        "ticker": "DIOD",
+        "weight": 2
+      },
+      {
+        "ticker": "TXN",
+        "weight": 2
+      }
+    ]
+  },
+  "アナログ半導体：通信": {
+    "category": "テクノロジー",
+    "parent_theme": "半導体",
+    "stocks": [
+      {
+        "ticker": "QRVO",
+        "weight": 2
+      },
+      {
+        "ticker": "SWKS",
+        "weight": 2
+      }
+    ]
+  },
+  "アメカジ": {
+    "category": "消費者一般",
+    "parent_theme": "アパレル",
+    "stocks": [
+      {
+        "ticker": "AEO",
+        "weight": 2
+      },
+      {
+        "ticker": "ANF",
+        "weight": 2
+      },
+      {
+        "ticker": "GAP",
+        "weight": 2
+      },
+      {
+        "ticker": "LEVI",
+        "weight": 2
+      },
+      {
+        "ticker": "URBN",
+        "weight": 2
+      },
+      {
+        "ticker": "VFC",
+        "weight": 2
+      }
+    ]
+  },
+  "アルコール飲料": {
+    "category": "消費者必需品",
+    "parent_theme": "食品",
+    "stocks": [
+      {
+        "ticker": "ABEV",
+        "weight": 2
+      },
+      {
+        "ticker": "BUD",
+        "weight": 2
+      },
+      {
+        "ticker": "DEO",
+        "weight": 2
+      },
+      {
+        "ticker": "STZ",
+        "weight": 2
+      },
+      {
+        "ticker": "TAP",
+        "weight": 2
+      }
+    ]
+  },
+  "アルミ": {
+    "category": "素材",
+    "parent_theme": "メタル",
+    "stocks": [
+      {
+        "ticker": "AA",
+        "weight": 2
+      },
+      {
+        "ticker": "CENX",
+        "weight": 2
+      },
+      {
+        "ticker": "CSTM",
+        "weight": 2
+      }
+    ]
+  },
+  "インフラ工事：交通": {
+    "category": "資本財",
+    "parent_theme": "建設",
+    "stocks": [
+      {
+        "ticker": "ROAD",
+        "weight": 2
+      },
+      {
+        "ticker": "TPC",
+        "weight": 2
+      }
+    ]
+  },
+  "インフラ工事：電力/通信": {
+    "category": "資本財",
+    "parent_theme": "建設",
+    "stocks": [
+      {
+        "ticker": "DY",
+        "weight": 2
+      },
+      {
+        "ticker": "MTZ",
+        "weight": 2
+      },
+      {
+        "ticker": "MYRG",
+        "weight": 2
+      },
+      {
+        "ticker": "PWR",
+        "weight": 2
+      }
+    ]
+  },
+  "インフラ計測": {
+    "category": "資本財",
+    "parent_theme": "産業機械",
+    "stocks": [
+      {
+        "ticker": "BMI",
+        "weight": 2
+      },
+      {
+        "ticker": "ITRI",
+        "weight": 2
+      },
+      {
+        "ticker": "XYL",
+        "weight": 2
+      }
+    ]
+  },
+  "インフラ設計": {
+    "category": "資本財",
+    "parent_theme": "建設",
+    "stocks": [
+      {
+        "ticker": "ACM",
+        "weight": 2
+      },
+      {
+        "ticker": "J",
+        "weight": 2
+      },
+      {
+        "ticker": "STN",
+        "weight": 2
+      },
+      {
+        "ticker": "TTEK",
+        "weight": 2
+      }
+    ]
+  },
+  "ウラン": {
+    "category": "エネルギー",
+    "parent_theme": "原子力",
+    "stocks": [
+      {
+        "ticker": "AEC",
+        "weight": 2
+      },
+      {
+        "ticker": "CCJ",
+        "weight": 2
+      },
+      {
+        "ticker": "DNN",
+        "weight": 2
+      },
+      {
+        "ticker": "EU",
+        "weight": 2
+      },
+      {
+        "ticker": "ISOU",
+        "weight": 2
+      },
+      {
+        "ticker": "LEU",
+        "weight": 2
+      },
+      {
+        "ticker": "NXE",
+        "weight": 2
+      },
+      {
+        "ticker": "UEC",
+        "weight": 2
+      },
+      {
+        "ticker": "URG",
+        "weight": 2
+      },
+      {
+        "ticker": "UROY",
+        "weight": 2
+      },
+      {
+        "ticker": "UUUU",
+        "weight": 2
+      }
+    ]
+  },
+  "オンサイト電源": {
+    "category": "テクノロジー",
+    "parent_theme": "データセンター",
+    "stocks": [
+      {
+        "ticker": "BE",
+        "weight": 2
+      },
+      {
+        "ticker": "CAT",
+        "weight": 2
+      },
+      {
+        "ticker": "CMI",
+        "weight": 2
+      },
+      {
+        "ticker": "GEV",
+        "weight": 2
+      },
+      {
+        "ticker": "GNRC",
+        "weight": 2
+      }
+    ]
+  },
+  "オンライン旅行予約": {
+    "category": "消費者一般",
+    "parent_theme": "レジャー・移動",
+    "stocks": [
+      {
+        "ticker": "ABNB",
+        "weight": 2
+      },
+      {
+        "ticker": "BKNG",
+        "weight": 2
+      },
+      {
+        "ticker": "EXPE",
+        "weight": 2
+      },
+      {
+        "ticker": "TRIP",
+        "weight": 2
+      }
+    ]
+  },
+  "カジュアルダイニング": {
+    "category": "消費者一般",
+    "parent_theme": "レストラン",
+    "stocks": [
+      {
+        "ticker": "DRI",
+        "weight": 2
+      },
+      {
+        "ticker": "TXRH",
+        "weight": 2
+      }
+    ]
+  },
+  "カスタムAI半導体": {
+    "category": "テクノロジー",
+    "parent_theme": "半導体",
+    "stocks": [
+      {
+        "ticker": "AMKR",
+        "weight": 2
+      },
+      {
+        "ticker": "ARM",
+        "weight": 2
+      },
+      {
+        "ticker": "ASX",
+        "weight": 2
+      },
+      {
+        "ticker": "AVGO",
+        "weight": 2
+      },
+      {
+        "ticker": "MRVL",
+        "weight": 2
+      },
+      {
+        "ticker": "TSM",
+        "weight": 2
+      }
+    ]
+  },
+  "カフェ": {
+    "category": "消費者一般",
+    "parent_theme": "レストラン",
+    "stocks": [
+      {
+        "ticker": "BROS",
+        "weight": 2
+      },
+      {
+        "ticker": "SBUX",
+        "weight": 2
+      }
+    ]
+  },
+  "ガス小売": {
+    "category": "公益",
+    "parent_theme": "電気・ガス小売",
+    "stocks": [
+      {
+        "ticker": "ATO",
+        "weight": 2
+      },
+      {
+        "ticker": "BIPC",
+        "weight": 2
+      },
+      {
+        "ticker": "MDU",
+        "weight": 2
+      },
+      {
+        "ticker": "NFG",
+        "weight": 2
+      },
+      {
+        "ticker": "NI",
+        "weight": 2
+      },
+      {
+        "ticker": "NJR",
+        "weight": 2
+      },
+      {
+        "ticker": "OGS",
+        "weight": 2
+      },
+      {
+        "ticker": "SR",
+        "weight": 2
+      },
+      {
+        "ticker": "SRE",
+        "weight": 2
+      },
+      {
+        "ticker": "SWX",
+        "weight": 2
+      },
+      {
+        "ticker": "UGI",
+        "weight": 2
+      }
+    ]
+  },
+  "クルーズ船": {
+    "category": "消費者一般",
+    "parent_theme": "レジャー・移動",
+    "stocks": [
+      {
+        "ticker": "CCL",
+        "weight": 2
+      },
+      {
+        "ticker": "NCLH",
+        "weight": 2
+      },
+      {
+        "ticker": "RCL",
+        "weight": 2
+      },
+      {
+        "ticker": "VIK",
+        "weight": 2
+      }
+    ]
+  },
+  "グラファイト": {
+    "category": "素材",
+    "parent_theme": "戦略資源",
+    "stocks": [
+      {
+        "ticker": "EAF",
+        "weight": 2
+      },
+      {
+        "ticker": "NMG",
+        "weight": 2
+      },
+      {
+        "ticker": "NVX",
+        "weight": 2
+      },
+      {
+        "ticker": "WWR",
+        "weight": 2
+      }
+    ]
+  },
+  "ケーブルTV": {
+    "category": "通信",
+    "parent_theme": "メディア",
+    "stocks": [
+      {
+        "ticker": "CHTR",
+        "weight": 2
+      },
+      {
+        "ticker": "CMCSA",
+        "weight": 2
+      }
+    ]
+  },
+  "コンサル": {
+    "category": "テクノロジー",
+    "parent_theme": "ITサービス",
+    "stocks": [
+      {
+        "ticker": "ACN",
+        "weight": 2
+      },
+      {
+        "ticker": "BAH",
+        "weight": 2
+      },
+      {
+        "ticker": "CTSH",
+        "weight": 2
+      },
+      {
+        "ticker": "IBM",
+        "weight": 2
+      }
+    ]
+  },
+  "コンテンツ・スタジオ": {
+    "category": "消費者一般",
+    "parent_theme": "メディア",
+    "stocks": [
+      {
+        "ticker": "CMCSA",
+        "weight": 2
+      },
+      {
+        "ticker": "DIS",
+        "weight": 2
+      },
+      {
+        "ticker": "FOXA",
+        "weight": 2
+      },
+      {
+        "ticker": "NWS",
+        "weight": 2
+      }
+    ]
+  },
+  "サイバー：ID/監視/診断": {
+    "category": "テクノロジー",
+    "parent_theme": "サイバーセキュリティ",
+    "stocks": [
+      {
+        "ticker": "DT",
+        "weight": 2
+      },
+      {
+        "ticker": "OKTA",
+        "weight": 2
+      },
+      {
+        "ticker": "TENB",
+        "weight": 2
+      }
+    ]
+  },
+  "サイバー：クラウド": {
+    "category": "テクノロジー",
+    "parent_theme": "サイバーセキュリティ",
+    "stocks": [
+      {
+        "ticker": "NET",
+        "weight": 2
+      },
+      {
+        "ticker": "ZS",
+        "weight": 2
+      }
+    ]
+  },
+  "サイバー：データ保護": {
+    "category": "テクノロジー",
+    "parent_theme": "サイバーセキュリティ",
+    "stocks": [
+      {
+        "ticker": "CVLT",
+        "weight": 2
+      },
+      {
+        "ticker": "RBRK",
+        "weight": 2
+      }
+    ]
+  },
+  "サイバー：端末保護": {
+    "category": "テクノロジー",
+    "parent_theme": "サイバーセキュリティ",
+    "stocks": [
+      {
+        "ticker": "CRWD",
+        "weight": 2
+      },
+      {
+        "ticker": "S",
+        "weight": 2
+      }
+    ]
+  },
+  "サイバー：統合": {
+    "category": "テクノロジー",
+    "parent_theme": "サイバーセキュリティ",
+    "stocks": [
+      {
+        "ticker": "CHKP",
+        "weight": 2
+      },
+      {
+        "ticker": "FTNT",
+        "weight": 2
+      },
+      {
+        "ticker": "PANW",
+        "weight": 2
+      }
+    ]
+  },
+  "スマートグラス": {
+    "category": "テクノロジー",
+    "parent_theme": "エッジAI",
+    "stocks": [
+      {
+        "ticker": "LSCC",
+        "weight": 2
+      },
+      {
+        "ticker": "META",
+        "weight": 2
+      },
+      {
+        "ticker": "QCOM",
+        "weight": 2
+      },
+      {
+        "ticker": "SNAP",
+        "weight": 2
+      },
+      {
+        "ticker": "VUZI",
+        "weight": 2
+      },
+      {
+        "ticker": "WRBY",
+        "weight": 2
+      }
+    ]
+  },
+  "スーパーメジャー": {
+    "category": "エネルギー",
+    "parent_theme": "石油",
+    "stocks": [
+      {
+        "ticker": "BP",
+        "weight": 2
+      },
+      {
+        "ticker": "CVX",
+        "weight": 2
+      },
+      {
+        "ticker": "PBR",
+        "weight": 2
+      },
+      {
+        "ticker": "SHEL",
+        "weight": 2
+      },
+      {
+        "ticker": "TTE",
+        "weight": 2
+      },
+      {
+        "ticker": "XOM",
+        "weight": 2
+      }
+    ]
+  },
+  "ソフト：AI利用基盤": {
+    "category": "テクノロジー",
+    "parent_theme": "ソフトウェア",
+    "stocks": [
+      {
+        "ticker": "DDOG",
+        "weight": 2
+      },
+      {
+        "ticker": "MDB",
+        "weight": 2
+      },
+      {
+        "ticker": "PATH",
+        "weight": 2
+      },
+      {
+        "ticker": "SNOW",
+        "weight": 2
+      }
+    ]
+  },
+  "ソフト：エンタープライズ": {
+    "category": "テクノロジー",
+    "parent_theme": "ソフトウェア",
+    "stocks": [
+      {
+        "ticker": "CRM",
+        "weight": 2
+      },
+      {
+        "ticker": "MSFT",
+        "weight": 2
+      },
+      {
+        "ticker": "NOW",
+        "weight": 2
+      },
+      {
+        "ticker": "ORCL",
+        "weight": 2
+      }
+    ]
+  },
+  "ソフト：コミュニケション": {
+    "category": "テクノロジー",
+    "parent_theme": "ソフトウェア",
+    "stocks": [
+      {
+        "ticker": "FIVN",
+        "weight": 2
+      },
+      {
+        "ticker": "RNG",
+        "weight": 2
+      },
+      {
+        "ticker": "ZM",
+        "weight": 2
+      }
+    ]
+  },
+  "ソフト：バックオフィス": {
+    "category": "テクノロジー",
+    "parent_theme": "ソフトウェア",
+    "stocks": [
+      {
+        "ticker": "DOCU",
+        "weight": 2
+      },
+      {
+        "ticker": "INTU",
+        "weight": 2
+      },
+      {
+        "ticker": "WDAY",
+        "weight": 2
+      }
+    ]
+  },
+  "ソフト：マーケ・販売": {
+    "category": "テクノロジー",
+    "parent_theme": "ソフトウェア",
+    "stocks": [
+      {
+        "ticker": "ADBE",
+        "weight": 2
+      },
+      {
+        "ticker": "FIG",
+        "weight": 2
+      },
+      {
+        "ticker": "HUBS",
+        "weight": 2
+      },
+      {
+        "ticker": "KVYO",
+        "weight": 2
+      },
+      {
+        "ticker": "SHOP",
+        "weight": 2
+      },
+      {
+        "ticker": "TWLO",
+        "weight": 2
+      }
+    ]
+  },
+  "ソフト：業界特化": {
+    "category": "テクノロジー",
+    "parent_theme": "ソフトウェア",
+    "stocks": [
+      {
+        "ticker": "ADSK",
+        "weight": 2
+      },
+      {
+        "ticker": "APPF",
+        "weight": 2
+      },
+      {
+        "ticker": "BSY",
+        "weight": 2
+      },
+      {
+        "ticker": "GWRE",
+        "weight": 2
+      },
+      {
+        "ticker": "MANH",
+        "weight": 2
+      },
+      {
+        "ticker": "PCOR",
+        "weight": 2
+      },
+      {
+        "ticker": "ROP",
+        "weight": 2
+      },
+      {
+        "ticker": "TRMB",
+        "weight": 2
+      },
+      {
+        "ticker": "TTAN",
+        "weight": 2
+      }
+    ]
+  },
+  "ソフト：生産性・開発": {
+    "category": "テクノロジー",
+    "parent_theme": "ソフトウェア",
+    "stocks": [
+      {
+        "ticker": "FROG",
+        "weight": 2
+      },
+      {
+        "ticker": "GTLB",
+        "weight": 2
+      },
+      {
+        "ticker": "MNDY",
+        "weight": 2
+      },
+      {
+        "ticker": "TEAM",
+        "weight": 2
+      }
+    ]
+  },
+  "タバコ": {
+    "category": "消費者必需品",
+    "parent_theme": "日用品",
+    "stocks": [
+      {
+        "ticker": "BTI",
+        "weight": 2
+      },
+      {
+        "ticker": "MO",
+        "weight": 2
+      },
+      {
+        "ticker": "PM",
+        "weight": 2
+      }
+    ]
+  },
+  "ディスカウント衣料": {
+    "category": "消費者一般",
+    "parent_theme": "アパレル",
+    "stocks": [
+      {
+        "ticker": "BURL",
+        "weight": 2
+      },
+      {
+        "ticker": "OLLI",
+        "weight": 2
+      },
+      {
+        "ticker": "ROST",
+        "weight": 2
+      },
+      {
+        "ticker": "TJX",
+        "weight": 2
+      }
+    ]
+  },
+  "データストレージ": {
+    "category": "テクノロジー",
+    "parent_theme": "データセンター",
+    "stocks": [
+      {
+        "ticker": "MU",
+        "weight": 2
+      },
+      {
+        "ticker": "SNDK",
+        "weight": 2
+      },
+      {
+        "ticker": "STX",
+        "weight": 2
+      },
+      {
+        "ticker": "WDC",
+        "weight": 2
+      }
+    ]
+  },
+  "トラック輸送": {
+    "category": "資本財",
+    "parent_theme": "物流",
+    "stocks": [
+      {
+        "ticker": "JBHT",
+        "weight": 2
+      },
+      {
+        "ticker": "ODFL",
+        "weight": 2
+      },
+      {
+        "ticker": "XPO",
+        "weight": 2
+      }
+    ]
+  },
+  "ドルストア": {
+    "category": "消費者必需品",
+    "parent_theme": "小売",
+    "stocks": [
+      {
+        "ticker": "DG",
+        "weight": 2
+      },
+      {
+        "ticker": "DLTR",
+        "weight": 2
+      }
+    ]
+  },
+  "ネオクラウド": {
+    "category": "テクノロジー",
+    "parent_theme": "AIプロバイダ",
+    "stocks": [
+      {
+        "ticker": "APLD",
+        "weight": 2
+      },
+      {
+        "ticker": "CIFR",
+        "weight": 2
+      },
+      {
+        "ticker": "CORZ",
+        "weight": 2
+      },
+      {
+        "ticker": "CRWV",
+        "weight": 2
+      },
+      {
+        "ticker": "DOCN",
+        "weight": 2
+      },
+      {
+        "ticker": "HUT",
+        "weight": 2
+      },
+      {
+        "ticker": "IREN",
+        "weight": 2
+      },
+      {
+        "ticker": "NBIS",
+        "weight": 2
+      },
+      {
+        "ticker": "NUAI",
+        "weight": 2
+      },
+      {
+        "ticker": "WULF",
+        "weight": 2
+      }
+    ]
+  },
+  "ネットメディア": {
+    "category": "通信",
+    "parent_theme": "メディア",
+    "stocks": [
+      {
+        "ticker": "GOOGL",
+        "weight": 2
+      },
+      {
+        "ticker": "META",
+        "weight": 2
+      },
+      {
+        "ticker": "PINS",
+        "weight": 2
+      },
+      {
+        "ticker": "RDDT",
+        "weight": 2
+      },
+      {
+        "ticker": "ROKU",
+        "weight": 2
+      },
+      {
+        "ticker": "SNAP",
+        "weight": 2
+      }
+    ]
+  },
+  "ハイパースケーラー": {
+    "category": "テクノロジー",
+    "parent_theme": "AIプロバイダ",
+    "stocks": [
+      {
+        "ticker": "AMZN",
+        "weight": 2
+      },
+      {
+        "ticker": "GOOGL",
+        "weight": 2
+      },
+      {
+        "ticker": "META",
+        "weight": 2
+      },
+      {
+        "ticker": "MSFT",
+        "weight": 2
+      },
+      {
+        "ticker": "ORCL",
+        "weight": 2
+      }
+    ]
+  },
+  "バイオテック：ゲノム": {
+    "category": "ヘルスケア",
+    "parent_theme": "医薬品",
+    "stocks": [
+      {
+        "ticker": "ALNY",
+        "weight": 2
+      },
+      {
+        "ticker": "CRSP",
+        "weight": 2
+      },
+      {
+        "ticker": "INCY",
+        "weight": 2
+      },
+      {
+        "ticker": "MRNA",
+        "weight": 2
+      },
+      {
+        "ticker": "NTRA",
+        "weight": 2
+      },
+      {
+        "ticker": "VKTX",
+        "weight": 2
+      }
+    ]
+  },
+  "バイオテック：特化": {
+    "category": "ヘルスケア",
+    "parent_theme": "医薬品",
+    "stocks": [
+      {
+        "ticker": "ARGX",
+        "weight": 2
+      },
+      {
+        "ticker": "INSM",
+        "weight": 2
+      },
+      {
+        "ticker": "VRTX",
+        "weight": 2
+      }
+    ]
+  },
+  "バイオテック：総合": {
+    "category": "ヘルスケア",
+    "parent_theme": "医薬品",
+    "stocks": [
+      {
+        "ticker": "ABBV",
+        "weight": 2
+      },
+      {
+        "ticker": "AMGN",
+        "weight": 2
+      },
+      {
+        "ticker": "BIIB",
+        "weight": 2
+      },
+      {
+        "ticker": "GILD",
+        "weight": 2
+      },
+      {
+        "ticker": "REGN",
+        "weight": 2
+      }
+    ]
+  },
+  "ファーストフード": {
+    "category": "消費者一般",
+    "parent_theme": "レストラン",
+    "stocks": [
+      {
+        "ticker": "DPZ",
+        "weight": 2
+      },
+      {
+        "ticker": "MCD",
+        "weight": 2
+      },
+      {
+        "ticker": "QSR",
+        "weight": 2
+      },
+      {
+        "ticker": "WEN",
+        "weight": 2
+      },
+      {
+        "ticker": "WING",
+        "weight": 2
+      },
+      {
+        "ticker": "YUM",
+        "weight": 2
+      }
+    ]
+  },
+  "ホテル・リゾート": {
+    "category": "消費者一般",
+    "parent_theme": "レジャー・移動",
+    "stocks": [
+      {
+        "ticker": "H",
+        "weight": 2
+      },
+      {
+        "ticker": "HLT",
+        "weight": 2
+      },
+      {
+        "ticker": "IHG",
+        "weight": 2
+      },
+      {
+        "ticker": "MAR",
+        "weight": 2
+      },
+      {
+        "ticker": "WH",
+        "weight": 2
+      }
+    ]
+  },
+  "ホームビルダー": {
+    "category": "消費者一般",
+    "parent_theme": "住宅",
+    "stocks": [
+      {
+        "ticker": "DHI",
+        "weight": 2
+      },
+      {
+        "ticker": "KBH",
+        "weight": 2
+      },
+      {
+        "ticker": "LEN",
+        "weight": 2
+      },
+      {
+        "ticker": "MTH",
+        "weight": 2
+      },
+      {
+        "ticker": "NVR",
+        "weight": 2
+      },
+      {
+        "ticker": "PHM",
+        "weight": 2
+      },
+      {
+        "ticker": "TMHC",
+        "weight": 2
+      },
+      {
+        "ticker": "TOL",
+        "weight": 2
+      }
+    ]
+  },
+  "メガバンク": {
+    "category": "金融",
+    "parent_theme": "銀行",
+    "stocks": [
+      {
+        "ticker": "BAC",
+        "weight": 2
+      },
+      {
+        "ticker": "C",
+        "weight": 2
+      },
+      {
+        "ticker": "JPM",
+        "weight": 2
+      },
+      {
+        "ticker": "WFC",
+        "weight": 2
+      }
+    ]
+  },
+  "モバイル通信": {
+    "category": "通信",
+    "parent_theme": "通信",
+    "stocks": [
+      {
+        "ticker": "T",
+        "weight": 2
+      },
+      {
+        "ticker": "TMUS",
+        "weight": 2
+      },
+      {
+        "ticker": "VZ",
+        "weight": 2
+      }
+    ]
+  },
+  "ライドシェア": {
+    "category": "消費者一般",
+    "parent_theme": "レジャー・移動",
+    "stocks": [
+      {
+        "ticker": "LYFT",
+        "weight": 2
+      },
+      {
+        "ticker": "UBER",
+        "weight": 2
+      }
+    ]
+  },
+  "ライフスタイル・家具": {
+    "category": "消費者一般",
+    "parent_theme": "住宅",
+    "stocks": [
+      {
+        "ticker": "SGI",
+        "weight": 2
+      },
+      {
+        "ticker": "SN",
+        "weight": 2
+      },
+      {
+        "ticker": "W",
+        "weight": 2
+      },
+      {
+        "ticker": "WSM",
+        "weight": 2
+      }
+    ]
+  },
+  "ライブエンタメ": {
+    "category": "消費者一般",
+    "parent_theme": "エンタメ",
+    "stocks": [
+      {
+        "ticker": "FWONK",
+        "weight": 2
+      },
+      {
+        "ticker": "LYV",
+        "weight": 2
+      },
+      {
+        "ticker": "TKO",
+        "weight": 2
+      }
+    ]
+  },
+  "ラグジュアリー": {
+    "category": "消費者一般",
+    "parent_theme": "アパレル",
+    "stocks": [
+      {
+        "ticker": "RL",
+        "weight": 2
+      },
+      {
+        "ticker": "TPR",
+        "weight": 2
+      }
+    ]
+  },
+  "ラック内接続": {
+    "category": "テクノロジー",
+    "parent_theme": "データセンター",
+    "stocks": [
+      {
+        "ticker": "ALAB",
+        "weight": 2
+      },
+      {
+        "ticker": "APH",
+        "weight": 2
+      },
+      {
+        "ticker": "CRDO",
+        "weight": 2
+      }
+    ]
+  },
+  "リチウム": {
+    "category": "素材",
+    "parent_theme": "戦略資源",
+    "stocks": [
+      {
+        "ticker": "ALB",
+        "weight": 2
+      },
+      {
+        "ticker": "ATLX",
+        "weight": 2
+      },
+      {
+        "ticker": "CRML",
+        "weight": 2
+      },
+      {
+        "ticker": "ELVR",
+        "weight": 2
+      },
+      {
+        "ticker": "IONR",
+        "weight": 2
+      },
+      {
+        "ticker": "LAC",
+        "weight": 2
+      },
+      {
+        "ticker": "RIO",
+        "weight": 2
+      },
+      {
+        "ticker": "SGML",
+        "weight": 2
+      },
+      {
+        "ticker": "SLI",
+        "weight": 2
+      },
+      {
+        "ticker": "SQM",
+        "weight": 2
+      }
+    ]
+  },
+  "レアアース": {
+    "category": "素材",
+    "parent_theme": "戦略資源",
+    "stocks": [
+      {
+        "ticker": "AREC",
+        "weight": 2
+      },
+      {
+        "ticker": "CRML",
+        "weight": 2
+      },
+      {
+        "ticker": "IDR",
+        "weight": 2
+      },
+      {
+        "ticker": "IPX",
+        "weight": 2
+      },
+      {
+        "ticker": "MP",
+        "weight": 2
+      },
+      {
+        "ticker": "NB",
+        "weight": 2
+      },
+      {
+        "ticker": "PPTA",
+        "weight": 2
+      },
+      {
+        "ticker": "TMC",
+        "weight": 2
+      },
+      {
+        "ticker": "TMRC",
+        "weight": 2
+      },
+      {
+        "ticker": "UAMY",
+        "weight": 2
+      },
+      {
+        "ticker": "USAR",
+        "weight": 2
+      },
+      {
+        "ticker": "UUUU",
+        "weight": 2
+      }
+    ]
+  },
+  "ロボ：物流/サービス": {
+    "category": "テクノロジー",
+    "parent_theme": "ロボティクス",
+    "stocks": [
+      {
+        "ticker": "AMRC",
+        "weight": 2
+      },
+      {
+        "ticker": "MIDD",
+        "weight": 2
+      },
+      {
+        "ticker": "RR",
+        "weight": 2
+      },
+      {
+        "ticker": "SERV",
+        "weight": 2
+      },
+      {
+        "ticker": "SYM",
+        "weight": 2
+      },
+      {
+        "ticker": "TNC",
+        "weight": 2
+      }
+    ]
+  },
+  "ロボ：産業/医療": {
+    "category": "テクノロジー",
+    "parent_theme": "ロボティクス",
+    "stocks": [
+      {
+        "ticker": "ISRG",
+        "weight": 2
+      },
+      {
+        "ticker": "ROK",
+        "weight": 2
+      },
+      {
+        "ticker": "TER",
+        "weight": 2
+      }
+    ]
+  },
+  "不動産サービス": {
+    "category": "不動産",
+    "parent_theme": "不動産",
+    "stocks": [
+      {
+        "ticker": "CBRE",
+        "weight": 2
+      },
+      {
+        "ticker": "JLL",
+        "weight": 2
+      }
+    ]
+  },
+  "不動産テック": {
+    "category": "不動産",
+    "parent_theme": "不動産",
+    "stocks": [
+      {
+        "ticker": "COMP",
+        "weight": 2
+      },
+      {
+        "ticker": "OPEN",
+        "weight": 2
+      }
+    ]
+  },
+  "不動産検索PF": {
+    "category": "不動産",
+    "parent_theme": "不動産",
+    "stocks": [
+      {
+        "ticker": "CSGP",
+        "weight": 2
+      },
+      {
+        "ticker": "Z",
+        "weight": 2
+      }
+    ]
+  },
+  "中古車販売": {
+    "category": "消費者一般",
+    "parent_theme": "自動車",
+    "stocks": [
+      {
+        "ticker": "AN",
+        "weight": 2
+      },
+      {
+        "ticker": "CVNA",
+        "weight": 2
+      },
+      {
+        "ticker": "KMX",
+        "weight": 2
+      },
+      {
+        "ticker": "LAD",
+        "weight": 2
+      }
+    ]
+  },
+  "中国AI": {
+    "category": "テクノロジー",
+    "parent_theme": "AIプロバイダ",
+    "stocks": [
+      {
+        "ticker": "BABA",
+        "weight": 2
+      },
+      {
+        "ticker": "BIDU",
+        "weight": 2
+      },
+      {
+        "ticker": "GDS",
+        "weight": 2
+      },
+      {
+        "ticker": "KC",
+        "weight": 2
+      },
+      {
+        "ticker": "VNET",
+        "weight": 2
+      }
+    ]
+  },
+  "中国EV": {
+    "category": "消費者一般",
+    "parent_theme": "中国",
+    "stocks": [
+      {
+        "ticker": "LI",
+        "weight": 2
+      },
+      {
+        "ticker": "NIO",
+        "weight": 2
+      },
+      {
+        "ticker": "XPEV",
+        "weight": 2
+      }
+    ]
+  },
+  "人型ロボ：目": {
+    "category": "テクノロジー",
+    "parent_theme": "ロボティクス",
+    "stocks": [
+      {
+        "ticker": "ARBE",
+        "weight": 2
+      },
+      {
+        "ticker": "CGNX",
+        "weight": 2
+      },
+      {
+        "ticker": "OUST",
+        "weight": 2
+      }
+    ]
+  },
+  "人型ロボ：筋骨・神経": {
+    "category": "テクノロジー",
+    "parent_theme": "ロボティクス",
+    "stocks": [
+      {
+        "ticker": "ADI",
+        "weight": 2
+      },
+      {
+        "ticker": "ALGM",
+        "weight": 2
+      },
+      {
+        "ticker": "HXL",
+        "weight": 2
+      },
+      {
+        "ticker": "ON",
+        "weight": 2
+      },
+      {
+        "ticker": "RRX",
+        "weight": 2
+      },
+      {
+        "ticker": "TEL",
+        "weight": 2
+      }
+    ]
+  },
+  "人型ロボ：脳": {
+    "category": "テクノロジー",
+    "parent_theme": "ロボティクス",
+    "stocks": [
+      {
+        "ticker": "NVDA",
+        "weight": 2
+      },
+      {
+        "ticker": "QCOM",
+        "weight": 2
+      },
+      {
+        "ticker": "TSLA",
+        "weight": 2
+      }
+    ]
+  },
+  "住宅ローン組成": {
+    "category": "金融",
+    "parent_theme": "消費者",
+    "stocks": [
+      {
+        "ticker": "PFSI",
+        "weight": 2
+      },
+      {
+        "ticker": "RKT",
+        "weight": 2
+      },
+      {
+        "ticker": "UWMC",
+        "weight": 2
+      }
+    ]
+  },
+  "住宅設備：外装": {
+    "category": "消費者一般",
+    "parent_theme": "住宅",
+    "stocks": [
+      {
+        "ticker": "CSL",
+        "weight": 2
+      },
+      {
+        "ticker": "JHX",
+        "weight": 2
+      },
+      {
+        "ticker": "OC",
+        "weight": 2
+      },
+      {
+        "ticker": "POOL",
+        "weight": 2
+      },
+      {
+        "ticker": "SHW",
+        "weight": 2
+      },
+      {
+        "ticker": "WMS",
+        "weight": 2
+      }
+    ]
+  },
+  "住宅設備：屋内": {
+    "category": "消費者一般",
+    "parent_theme": "住宅",
+    "stocks": [
+      {
+        "ticker": "ALLE",
+        "weight": 2
+      },
+      {
+        "ticker": "FBIN",
+        "weight": 2
+      },
+      {
+        "ticker": "MAS",
+        "weight": 2
+      },
+      {
+        "ticker": "REZI",
+        "weight": 2
+      },
+      {
+        "ticker": "SWK",
+        "weight": 2
+      }
+    ]
+  },
+  "住宅設備：流通": {
+    "category": "消費者一般",
+    "parent_theme": "住宅",
+    "stocks": [
+      {
+        "ticker": "BLDR",
+        "weight": 2
+      },
+      {
+        "ticker": "FND",
+        "weight": 2
+      },
+      {
+        "ticker": "HD",
+        "weight": 2
+      },
+      {
+        "ticker": "LOW",
+        "weight": 2
+      },
+      {
+        "ticker": "TSCO",
+        "weight": 2
+      }
+    ]
+  },
+  "住設専門商社": {
+    "category": "消費者一般",
+    "parent_theme": "住宅",
+    "stocks": [
+      {
+        "ticker": "FERG",
+        "weight": 2
+      },
+      {
+        "ticker": "POOL",
+        "weight": 2
+      },
+      {
+        "ticker": "QXO",
+        "weight": 2
+      },
+      {
+        "ticker": "SITE",
+        "weight": 2
+      },
+      {
+        "ticker": "WSO",
+        "weight": 2
+      }
+    ]
+  },
+  "保険DX": {
+    "category": "金融",
+    "parent_theme": "フィンテック",
+    "stocks": [
+      {
+        "ticker": "CLOV",
+        "weight": 2
+      },
+      {
+        "ticker": "LMND",
+        "weight": 2
+      },
+      {
+        "ticker": "OSCR",
+        "weight": 2
+      }
+    ]
+  },
+  "保険仲介": {
+    "category": "金融",
+    "parent_theme": "保険",
+    "stocks": [
+      {
+        "ticker": "AJG",
+        "weight": 2
+      },
+      {
+        "ticker": "AON",
+        "weight": 2
+      },
+      {
+        "ticker": "BRO",
+        "weight": 2
+      },
+      {
+        "ticker": "MMC",
+        "weight": 2
+      },
+      {
+        "ticker": "RYAN",
+        "weight": 2
+      },
+      {
+        "ticker": "WTW",
+        "weight": 2
+      }
+    ]
+  },
+  "光接続：半導体": {
+    "category": "テクノロジー",
+    "parent_theme": "データセンター",
+    "stocks": [
+      {
+        "ticker": "AVGO",
+        "weight": 2
+      },
+      {
+        "ticker": "MRVL",
+        "weight": 2
+      },
+      {
+        "ticker": "MTSI",
+        "weight": 2
+      },
+      {
+        "ticker": "POET",
+        "weight": 2
+      },
+      {
+        "ticker": "SITM",
+        "weight": 2
+      }
+    ]
+  },
+  "光接続：基盤・デバイス": {
+    "category": "テクノロジー",
+    "parent_theme": "データセンター",
+    "stocks": [
+      {
+        "ticker": "ANET",
+        "weight": 2
+      },
+      {
+        "ticker": "CIEN",
+        "weight": 2
+      },
+      {
+        "ticker": "COHR",
+        "weight": 2
+      },
+      {
+        "ticker": "CSCO",
+        "weight": 2
+      },
+      {
+        "ticker": "GLW",
+        "weight": 2
+      },
+      {
+        "ticker": "KEYS",
+        "weight": 2
+      },
+      {
+        "ticker": "LITE",
+        "weight": 2
+      },
+      {
+        "ticker": "VIAV",
+        "weight": 2
+      }
+    ]
+  },
+  "光接続：製造受託": {
+    "category": "テクノロジー",
+    "parent_theme": "データセンター",
+    "stocks": [
+      {
+        "ticker": "AAOI",
+        "weight": 2
+      },
+      {
+        "ticker": "CLS",
+        "weight": 2
+      },
+      {
+        "ticker": "FN",
+        "weight": 2
+      },
+      {
+        "ticker": "SANM",
+        "weight": 2
+      }
+    ]
+  },
+  "加工食品": {
+    "category": "消費者必需品",
+    "parent_theme": "食品",
+    "stocks": [
+      {
+        "ticker": "CAG",
+        "weight": 2
+      },
+      {
+        "ticker": "CPB",
+        "weight": 2
+      },
+      {
+        "ticker": "GIS",
+        "weight": 2
+      },
+      {
+        "ticker": "KHC",
+        "weight": 2
+      },
+      {
+        "ticker": "MKC",
+        "weight": 2
+      }
+    ]
+  },
+  "動画配信サービス": {
+    "category": "消費者一般",
+    "parent_theme": "エンタメ",
+    "stocks": [
+      {
+        "ticker": "DIS",
+        "weight": 2
+      },
+      {
+        "ticker": "GOOGL",
+        "weight": 2
+      },
+      {
+        "ticker": "NFLX",
+        "weight": 2
+      }
+    ]
+  },
+  "化学：汎用": {
+    "category": "素材",
+    "parent_theme": "化学",
+    "stocks": [
+      {
+        "ticker": "DOW",
+        "weight": 2
+      },
+      {
+        "ticker": "LYB",
+        "weight": 2
+      }
+    ]
+  },
+  "化学：農業": {
+    "category": "素材",
+    "parent_theme": "化学",
+    "stocks": [
+      {
+        "ticker": "CF",
+        "weight": 2
+      },
+      {
+        "ticker": "CTVA",
+        "weight": 2
+      },
+      {
+        "ticker": "NTR",
+        "weight": 2
+      },
+      {
+        "ticker": "SQM",
+        "weight": 2
+      }
+    ]
+  },
+  "化粧品・パーソナルケア": {
+    "category": "消費者必需品",
+    "parent_theme": "日用品",
+    "stocks": [
+      {
+        "ticker": "EL",
+        "weight": 2
+      },
+      {
+        "ticker": "ELF",
+        "weight": 2
+      },
+      {
+        "ticker": "KVUE",
+        "weight": 2
+      },
+      {
+        "ticker": "PG",
+        "weight": 2
+      },
+      {
+        "ticker": "ULTA",
+        "weight": 2
+      }
+    ]
+  },
+  "医療保険＋診療": {
+    "category": "ヘルスケア",
+    "parent_theme": "医療保険・診療",
+    "stocks": [
+      {
+        "ticker": "CI",
+        "weight": 2
+      },
+      {
+        "ticker": "CNC",
+        "weight": 2
+      },
+      {
+        "ticker": "CVS",
+        "weight": 2
+      },
+      {
+        "ticker": "ELV",
+        "weight": 2
+      },
+      {
+        "ticker": "HUM",
+        "weight": 2
+      },
+      {
+        "ticker": "UNH",
+        "weight": 2
+      }
+    ]
+  },
+  "医薬品卸": {
+    "category": "ヘルスケア",
+    "parent_theme": "医薬品",
+    "stocks": [
+      {
+        "ticker": "CAH",
+        "weight": 2
+      },
+      {
+        "ticker": "COR",
+        "weight": 2
+      },
+      {
+        "ticker": "HSIC",
+        "weight": 2
+      },
+      {
+        "ticker": "MCK",
+        "weight": 2
+      }
+    ]
+  },
+  "半導体受託製造": {
+    "category": "テクノロジー",
+    "parent_theme": "データセンター",
+    "stocks": [
+      {
+        "ticker": "AMKR",
+        "weight": 2
+      },
+      {
+        "ticker": "ASX",
+        "weight": 2
+      },
+      {
+        "ticker": "GFS",
+        "weight": 2
+      },
+      {
+        "ticker": "INTC",
+        "weight": 2
+      },
+      {
+        "ticker": "SKYT",
+        "weight": 2
+      },
+      {
+        "ticker": "TSEM",
+        "weight": 2
+      },
+      {
+        "ticker": "TSM",
+        "weight": 2
+      },
+      {
+        "ticker": "UMC",
+        "weight": 2
+      }
+    ]
+  },
+  "半導体工場インフラ": {
+    "category": "テクノロジー",
+    "parent_theme": "半導体",
+    "stocks": [
+      {
+        "ticker": "AWI",
+        "weight": 2
+      },
+      {
+        "ticker": "ETN",
+        "weight": 2
+      },
+      {
+        "ticker": "POWL",
+        "weight": 2
+      },
+      {
+        "ticker": "THR",
+        "weight": 2
+      },
+      {
+        "ticker": "WTS",
+        "weight": 2
+      }
+    ]
+  },
+  "半導体製造装置：前工程": {
+    "category": "テクノロジー",
+    "parent_theme": "半導体",
+    "stocks": [
+      {
+        "ticker": "ACLS",
+        "weight": 2
+      },
+      {
+        "ticker": "AMAT",
+        "weight": 2
+      },
+      {
+        "ticker": "ASML",
+        "weight": 2
+      },
+      {
+        "ticker": "KLAC",
+        "weight": 2
+      },
+      {
+        "ticker": "LRCX",
+        "weight": 2
+      }
+    ]
+  },
+  "半導体製造装置：後工程": {
+    "category": "テクノロジー",
+    "parent_theme": "半導体",
+    "stocks": [
+      {
+        "ticker": "AEHR",
+        "weight": 2
+      },
+      {
+        "ticker": "CAMT",
+        "weight": 2
+      },
+      {
+        "ticker": "COHU",
+        "weight": 2
+      },
+      {
+        "ticker": "ONTO",
+        "weight": 2
+      },
+      {
+        "ticker": "TER",
+        "weight": 2
+      }
+    ]
+  },
+  "半導体製造装置：部品": {
+    "category": "テクノロジー",
+    "parent_theme": "半導体",
+    "stocks": [
+      {
+        "ticker": "AEIS",
+        "weight": 2
+      },
+      {
+        "ticker": "ICHR",
+        "weight": 2
+      },
+      {
+        "ticker": "MKSI",
+        "weight": 2
+      },
+      {
+        "ticker": "UCTT",
+        "weight": 2
+      }
+    ]
+  },
+  "半導体設計ソフト": {
+    "category": "テクノロジー",
+    "parent_theme": "ソフトウェア",
+    "stocks": [
+      {
+        "ticker": "CDNS",
+        "weight": 2
+      },
+      {
+        "ticker": "SNPS",
+        "weight": 2
+      }
+    ]
+  },
+  "半導体：材料・消耗品": {
+    "category": "テクノロジー",
+    "parent_theme": "半導体",
+    "stocks": [
+      {
+        "ticker": "ENTG",
+        "weight": 2
+      },
+      {
+        "ticker": "LIN",
+        "weight": 2
+      },
+      {
+        "ticker": "PLAB",
+        "weight": 2
+      },
+      {
+        "ticker": "Q",
+        "weight": 2
+      }
+    ]
+  },
+  "原発機器（次世代）": {
+    "category": "エネルギー",
+    "parent_theme": "原子力",
+    "stocks": [
+      {
+        "ticker": "BWXT",
+        "weight": 2
+      },
+      {
+        "ticker": "GEV",
+        "weight": 2
+      },
+      {
+        "ticker": "OKLO",
+        "weight": 2
+      },
+      {
+        "ticker": "SMR",
+        "weight": 2
+      }
+    ]
+  },
+  "原発機器（現行）": {
+    "category": "エネルギー",
+    "parent_theme": "原子力",
+    "stocks": [
+      {
+        "ticker": "BWXT",
+        "weight": 2
+      },
+      {
+        "ticker": "CCJ",
+        "weight": 2
+      },
+      {
+        "ticker": "FLS",
+        "weight": 2
+      },
+      {
+        "ticker": "GEV",
+        "weight": 2
+      }
+    ]
+  },
+  "地銀": {
+    "category": "金融",
+    "parent_theme": "銀行",
+    "stocks": [
+      {
+        "ticker": "BPOP",
+        "weight": 2
+      },
+      {
+        "ticker": "CFG",
+        "weight": 2
+      },
+      {
+        "ticker": "CFR",
+        "weight": 2
+      },
+      {
+        "ticker": "FHN",
+        "weight": 2
+      },
+      {
+        "ticker": "HWC",
+        "weight": 2
+      },
+      {
+        "ticker": "KEY",
+        "weight": 2
+      },
+      {
+        "ticker": "MTB",
+        "weight": 2
+      },
+      {
+        "ticker": "PB",
+        "weight": 2
+      },
+      {
+        "ticker": "RF",
+        "weight": 2
+      },
+      {
+        "ticker": "SSB",
+        "weight": 2
+      },
+      {
+        "ticker": "WAL",
+        "weight": 2
+      },
+      {
+        "ticker": "ZION",
+        "weight": 2
+      }
+    ]
+  },
+  "多角化資源": {
+    "category": "素材",
+    "parent_theme": "資源",
+    "stocks": [
+      {
+        "ticker": "BHP",
+        "weight": 2
+      },
+      {
+        "ticker": "RIO",
+        "weight": 2
+      },
+      {
+        "ticker": "VALE",
+        "weight": 2
+      }
+    ]
+  },
+  "大衆車": {
+    "category": "消費者一般",
+    "parent_theme": "自動車",
+    "stocks": [
+      {
+        "ticker": "F",
+        "weight": 2
+      },
+      {
+        "ticker": "GM",
+        "weight": 2
+      },
+      {
+        "ticker": "STLA",
+        "weight": 2
+      }
+    ]
+  },
+  "天然ガス：収集・加工": {
+    "category": "エネルギー",
+    "parent_theme": "天然ガス",
+    "stocks": [
+      {
+        "ticker": "ET",
+        "weight": 2
+      },
+      {
+        "ticker": "OKE",
+        "weight": 2
+      },
+      {
+        "ticker": "TRGP",
+        "weight": 2
+      }
+    ]
+  },
+  "天然ガス：生産": {
+    "category": "エネルギー",
+    "parent_theme": "天然ガス",
+    "stocks": [
+      {
+        "ticker": "AR",
+        "weight": 2
+      },
+      {
+        "ticker": "CTRA",
+        "weight": 2
+      },
+      {
+        "ticker": "EQT",
+        "weight": 2
+      },
+      {
+        "ticker": "EXE",
+        "weight": 2
+      },
+      {
+        "ticker": "RRC",
+        "weight": 2
+      }
+    ]
+  },
+  "天然ガス：輸出": {
+    "category": "エネルギー",
+    "parent_theme": "天然ガス",
+    "stocks": [
+      {
+        "ticker": "LNG",
+        "weight": 2
+      },
+      {
+        "ticker": "SRE",
+        "weight": 2
+      }
+    ]
+  },
+  "天然ガス：輸送・需要接続": {
+    "category": "エネルギー",
+    "parent_theme": "データセンター",
+    "stocks": [
+      {
+        "ticker": "KMI",
+        "weight": 2
+      },
+      {
+        "ticker": "TRP",
+        "weight": 2
+      },
+      {
+        "ticker": "WMB",
+        "weight": 2
+      }
+    ]
+  },
+  "太陽光発電": {
+    "category": "テクノロジー",
+    "parent_theme": "データセンター",
+    "stocks": [
+      {
+        "ticker": "CSIQ",
+        "weight": 2
+      },
+      {
+        "ticker": "ENPH",
+        "weight": 2
+      },
+      {
+        "ticker": "FSLR",
+        "weight": 2
+      },
+      {
+        "ticker": "NXT",
+        "weight": 2
+      }
+    ]
+  },
+  "宅配デリバリー": {
+    "category": "消費者一般",
+    "parent_theme": "レストラン",
+    "stocks": [
+      {
+        "ticker": "CART",
+        "weight": 2
+      },
+      {
+        "ticker": "DASH",
+        "weight": 2
+      },
+      {
+        "ticker": "UBER",
+        "weight": 2
+      }
+    ]
+  },
+  "宇宙：インフラ": {
+    "category": "資本財",
+    "parent_theme": "宇宙",
+    "stocks": [
+      {
+        "ticker": "FLY",
+        "weight": 2
+      },
+      {
+        "ticker": "LUNR",
+        "weight": 2
+      },
+      {
+        "ticker": "RDW",
+        "weight": 2
+      },
+      {
+        "ticker": "RKLB",
+        "weight": 2
+      }
+    ]
+  },
+  "宇宙：地球観測": {
+    "category": "資本財",
+    "parent_theme": "宇宙",
+    "stocks": [
+      {
+        "ticker": "BKSY",
+        "weight": 2
+      },
+      {
+        "ticker": "PL",
+        "weight": 2
+      },
+      {
+        "ticker": "SATL",
+        "weight": 2
+      },
+      {
+        "ticker": "SPIR",
+        "weight": 2
+      }
+    ]
+  },
+  "宇宙：衛星通信": {
+    "category": "資本財",
+    "parent_theme": "宇宙",
+    "stocks": [
+      {
+        "ticker": "ASTS",
+        "weight": 2
+      },
+      {
+        "ticker": "GSAT",
+        "weight": 2
+      },
+      {
+        "ticker": "IRDM",
+        "weight": 2
+      },
+      {
+        "ticker": "SATS",
+        "weight": 2
+      },
+      {
+        "ticker": "VSAT",
+        "weight": 2
+      }
+    ]
+  },
+  "広告テック": {
+    "category": "通信",
+    "parent_theme": "メディア",
+    "stocks": [
+      {
+        "ticker": "APP",
+        "weight": 2
+      },
+      {
+        "ticker": "DV",
+        "weight": 2
+      },
+      {
+        "ticker": "MGNI",
+        "weight": 2
+      },
+      {
+        "ticker": "TTD",
+        "weight": 2
+      },
+      {
+        "ticker": "U",
+        "weight": 2
+      },
+      {
+        "ticker": "ZETA",
+        "weight": 2
+      }
+    ]
+  },
+  "廃棄物・リサイクル": {
+    "category": "資本財",
+    "parent_theme": "産業サービス",
+    "stocks": [
+      {
+        "ticker": "CLH",
+        "weight": 2
+      },
+      {
+        "ticker": "GFL",
+        "weight": 2
+      },
+      {
+        "ticker": "RSG",
+        "weight": 2
+      },
+      {
+        "ticker": "VLTO",
+        "weight": 2
+      },
+      {
+        "ticker": "WCN",
+        "weight": 2
+      },
+      {
+        "ticker": "WM",
+        "weight": 2
+      }
+    ]
+  },
+  "建築塗料": {
+    "category": "素材",
+    "parent_theme": "化学",
+    "stocks": [
+      {
+        "ticker": "PPG",
+        "weight": 2
+      },
+      {
+        "ticker": "SHW",
+        "weight": 2
+      }
+    ]
+  },
+  "投資銀行": {
+    "category": "金融",
+    "parent_theme": "銀行",
+    "stocks": [
+      {
+        "ticker": "EVR",
+        "weight": 2
+      },
+      {
+        "ticker": "GS",
+        "weight": 2
+      },
+      {
+        "ticker": "JEF",
+        "weight": 2
+      },
+      {
+        "ticker": "LAZ",
+        "weight": 2
+      },
+      {
+        "ticker": "MS",
+        "weight": 2
+      },
+      {
+        "ticker": "RJF",
+        "weight": 2
+      }
+    ]
+  },
+  "掘削サービス": {
+    "category": "エネルギー",
+    "parent_theme": "石油",
+    "stocks": [
+      {
+        "ticker": "BKR",
+        "weight": 2
+      },
+      {
+        "ticker": "HAL",
+        "weight": 2
+      },
+      {
+        "ticker": "SLB",
+        "weight": 2
+      },
+      {
+        "ticker": "WFRD",
+        "weight": 2
+      }
+    ]
+  },
+  "掘削機器": {
+    "category": "エネルギー",
+    "parent_theme": "石油",
+    "stocks": [
+      {
+        "ticker": "FTI",
+        "weight": 2
+      },
+      {
+        "ticker": "NOV",
+        "weight": 2
+      },
+      {
+        "ticker": "TS",
+        "weight": 2
+      }
+    ]
+  },
+  "損害保険": {
+    "category": "金融",
+    "parent_theme": "保険",
+    "stocks": [
+      {
+        "ticker": "AIG",
+        "weight": 2
+      },
+      {
+        "ticker": "ALL",
+        "weight": 2
+      },
+      {
+        "ticker": "CB",
+        "weight": 2
+      },
+      {
+        "ticker": "HIG",
+        "weight": 2
+      },
+      {
+        "ticker": "PGR",
+        "weight": 2
+      },
+      {
+        "ticker": "TRV",
+        "weight": 2
+      }
+    ]
+  },
+  "施設衛生管理": {
+    "category": "資本財",
+    "parent_theme": "産業サービス",
+    "stocks": [
+      {
+        "ticker": "CTAS",
+        "weight": 2
+      },
+      {
+        "ticker": "ROL",
+        "weight": 2
+      },
+      {
+        "ticker": "RTO",
+        "weight": 2
+      }
+    ]
+  },
+  "施設設備": {
+    "category": "資本財",
+    "parent_theme": "設備インフラ",
+    "stocks": [
+      {
+        "ticker": "ALLE",
+        "weight": 2
+      },
+      {
+        "ticker": "APG",
+        "weight": 2
+      },
+      {
+        "ticker": "AYI",
+        "weight": 2
+      },
+      {
+        "ticker": "JCI",
+        "weight": 2
+      },
+      {
+        "ticker": "OTIS",
+        "weight": 2
+      },
+      {
+        "ticker": "XYL",
+        "weight": 2
+      }
+    ]
+  },
+  "旅客航空：LCC": {
+    "category": "消費者一般",
+    "parent_theme": "レジャー・移動",
+    "stocks": [
+      {
+        "ticker": "ALK",
+        "weight": 2
+      },
+      {
+        "ticker": "LUV",
+        "weight": 2
+      }
+    ]
+  },
+  "旅客航空：メガキャリア": {
+    "category": "消費者一般",
+    "parent_theme": "レジャー・移動",
+    "stocks": [
+      {
+        "ticker": "AAL",
+        "weight": 2
+      },
+      {
+        "ticker": "DAL",
+        "weight": 2
+      },
+      {
+        "ticker": "UAL",
+        "weight": 2
+      }
+    ]
+  },
+  "日用品": {
+    "category": "消費者必需品",
+    "parent_theme": "日用品",
+    "stocks": [
+      {
+        "ticker": "CHD",
+        "weight": 2
+      },
+      {
+        "ticker": "CL",
+        "weight": 2
+      },
+      {
+        "ticker": "CLX",
+        "weight": 2
+      },
+      {
+        "ticker": "HLN",
+        "weight": 2
+      },
+      {
+        "ticker": "KMB",
+        "weight": 2
+      },
+      {
+        "ticker": "KVUE",
+        "weight": 2
+      },
+      {
+        "ticker": "PG",
+        "weight": 2
+      },
+      {
+        "ticker": "REYN",
+        "weight": 2
+      },
+      {
+        "ticker": "UL",
+        "weight": 2
+      }
+    ]
+  },
+  "暗号資産・ブロックチェン": {
+    "category": "金融",
+    "parent_theme": "フィンテック",
+    "stocks": [
+      {
+        "ticker": "BLSH",
+        "weight": 2
+      },
+      {
+        "ticker": "CLSK",
+        "weight": 2
+      },
+      {
+        "ticker": "COIN",
+        "weight": 2
+      },
+      {
+        "ticker": "CRCL",
+        "weight": 2
+      },
+      {
+        "ticker": "FIGR",
+        "weight": 2
+      },
+      {
+        "ticker": "MARA",
+        "weight": 2
+      },
+      {
+        "ticker": "MSTR",
+        "weight": 2
+      },
+      {
+        "ticker": "XYZ",
+        "weight": 2
+      }
+    ]
+  },
+  "機械：多角化": {
+    "category": "資本財",
+    "parent_theme": "産業機械",
+    "stocks": [
+      {
+        "ticker": "DOV",
+        "weight": 2
+      },
+      {
+        "ticker": "EMR",
+        "weight": 2
+      },
+      {
+        "ticker": "ETN",
+        "weight": 2
+      },
+      {
+        "ticker": "HON",
+        "weight": 2
+      },
+      {
+        "ticker": "ITW",
+        "weight": 2
+      },
+      {
+        "ticker": "PH",
+        "weight": 2
+      },
+      {
+        "ticker": "TXT",
+        "weight": 2
+      }
+    ]
+  },
+  "機械：建設/農業/資源": {
+    "category": "資本財",
+    "parent_theme": "産業機械",
+    "stocks": [
+      {
+        "ticker": "CAT",
+        "weight": 2
+      },
+      {
+        "ticker": "CMI",
+        "weight": 2
+      },
+      {
+        "ticker": "DE",
+        "weight": 2
+      },
+      {
+        "ticker": "OSK",
+        "weight": 2
+      },
+      {
+        "ticker": "TTC",
+        "weight": 2
+      }
+    ]
+  },
+  "次世代セル": {
+    "category": "エネルギー",
+    "parent_theme": "バッテリー",
+    "stocks": [
+      {
+        "ticker": "AMPX",
+        "weight": 2
+      },
+      {
+        "ticker": "ENVX",
+        "weight": 2
+      },
+      {
+        "ticker": "QS",
+        "weight": 2
+      },
+      {
+        "ticker": "SES",
+        "weight": 2
+      },
+      {
+        "ticker": "SLDP",
+        "weight": 2
+      }
+    ]
+  },
+  "次世代冷媒": {
+    "category": "テクノロジー",
+    "parent_theme": "データセンター",
+    "stocks": [
+      {
+        "ticker": "CC",
+        "weight": 2
+      },
+      {
+        "ticker": "SOLS",
+        "weight": 2
+      }
+    ]
+  },
+  "次世代銀行": {
+    "category": "金融",
+    "parent_theme": "フィンテック",
+    "stocks": [
+      {
+        "ticker": "HOOD",
+        "weight": 2
+      },
+      {
+        "ticker": "SOFI",
+        "weight": 2
+      }
+    ]
+  },
+  "次世代電源": {
+    "category": "テクノロジー",
+    "parent_theme": "データセンター",
+    "stocks": [
+      {
+        "ticker": "ADI",
+        "weight": 2
+      },
+      {
+        "ticker": "ETN",
+        "weight": 2
+      },
+      {
+        "ticker": "FLEX",
+        "weight": 2
+      },
+      {
+        "ticker": "MPWR",
+        "weight": 2
+      },
+      {
+        "ticker": "ON",
+        "weight": 2
+      },
+      {
+        "ticker": "VICR",
+        "weight": 2
+      },
+      {
+        "ticker": "VRT",
+        "weight": 2
+      }
+    ]
+  },
+  "水道": {
+    "category": "公益",
+    "parent_theme": "水道",
+    "stocks": [
+      {
+        "ticker": "AWK",
+        "weight": 2
+      },
+      {
+        "ticker": "SBS",
+        "weight": 2
+      },
+      {
+        "ticker": "WTRG",
+        "weight": 2
+      }
+    ]
+  },
+  "決済インフラ": {
+    "category": "金融",
+    "parent_theme": "決済",
+    "stocks": [
+      {
+        "ticker": "MA",
+        "weight": 2
+      },
+      {
+        "ticker": "V",
+        "weight": 2
+      }
+    ]
+  },
+  "決済テック": {
+    "category": "金融",
+    "parent_theme": "決済",
+    "stocks": [
+      {
+        "ticker": "PYPL",
+        "weight": 2
+      },
+      {
+        "ticker": "SHOP",
+        "weight": 2
+      },
+      {
+        "ticker": "TOST",
+        "weight": 2
+      },
+      {
+        "ticker": "XYZ",
+        "weight": 2
+      }
+    ]
+  },
+  "海洋掘削サービス": {
+    "category": "エネルギー",
+    "parent_theme": "石油",
+    "stocks": [
+      {
+        "ticker": "NE",
+        "weight": 2
+      },
+      {
+        "ticker": "RIG",
+        "weight": 2
+      },
+      {
+        "ticker": "VAL",
+        "weight": 2
+      }
+    ]
+  },
+  "消費者レンディング": {
+    "category": "金融",
+    "parent_theme": "消費者",
+    "stocks": [
+      {
+        "ticker": "AFRM",
+        "weight": 2
+      },
+      {
+        "ticker": "ALLY",
+        "weight": 2
+      },
+      {
+        "ticker": "AXP",
+        "weight": 2
+      },
+      {
+        "ticker": "COF",
+        "weight": 2
+      },
+      {
+        "ticker": "FCFS",
+        "weight": 2
+      },
+      {
+        "ticker": "KLAR",
+        "weight": 2
+      },
+      {
+        "ticker": "OMF",
+        "weight": 2
+      },
+      {
+        "ticker": "SLM",
+        "weight": 2
+      },
+      {
+        "ticker": "SYF",
+        "weight": 2
+      },
+      {
+        "ticker": "UPST",
+        "weight": 2
+      }
+    ]
+  },
+  "温度管理インフラ": {
+    "category": "テクノロジー",
+    "parent_theme": "データセンター",
+    "stocks": [
+      {
+        "ticker": "CARR",
+        "weight": 2
+      },
+      {
+        "ticker": "MOD",
+        "weight": 2
+      },
+      {
+        "ticker": "NVT",
+        "weight": 2
+      },
+      {
+        "ticker": "TT",
+        "weight": 2
+      },
+      {
+        "ticker": "VRT",
+        "weight": 2
+      }
+    ]
+  },
+  "物流サービス": {
+    "category": "資本財",
+    "parent_theme": "物流",
+    "stocks": [
+      {
+        "ticker": "CHRW",
+        "weight": 2
+      },
+      {
+        "ticker": "EXPD",
+        "weight": 2
+      },
+      {
+        "ticker": "FDX",
+        "weight": 2
+      },
+      {
+        "ticker": "GXO",
+        "weight": 2
+      },
+      {
+        "ticker": "UPS",
+        "weight": 2
+      }
+    ]
+  },
+  "生命保険": {
+    "category": "金融",
+    "parent_theme": "保険",
+    "stocks": [
+      {
+        "ticker": "AFL",
+        "weight": 2
+      },
+      {
+        "ticker": "GL",
+        "weight": 2
+      },
+      {
+        "ticker": "MET",
+        "weight": 2
+      },
+      {
+        "ticker": "MFC",
+        "weight": 2
+      },
+      {
+        "ticker": "PRI",
+        "weight": 2
+      },
+      {
+        "ticker": "PRU",
+        "weight": 2
+      }
+    ]
+  },
+  "生命科学：創薬受託": {
+    "category": "ヘルスケア",
+    "parent_theme": "生命科学",
+    "stocks": [
+      {
+        "ticker": "CRL",
+        "weight": 2
+      },
+      {
+        "ticker": "ICLR",
+        "weight": 2
+      },
+      {
+        "ticker": "IQV",
+        "weight": 2
+      },
+      {
+        "ticker": "MEDP",
+        "weight": 2
+      }
+    ]
+  },
+  "生命科学：消耗品": {
+    "category": "ヘルスケア",
+    "parent_theme": "生命科学",
+    "stocks": [
+      {
+        "ticker": "RGEN",
+        "weight": 2
+      },
+      {
+        "ticker": "TECH",
+        "weight": 2
+      },
+      {
+        "ticker": "WST",
+        "weight": 2
+      }
+    ]
+  },
+  "生命科学：精密分析": {
+    "category": "ヘルスケア",
+    "parent_theme": "生命科学",
+    "stocks": [
+      {
+        "ticker": "A",
+        "weight": 2
+      },
+      {
+        "ticker": "BRKR",
+        "weight": 2
+      },
+      {
+        "ticker": "ILMN",
+        "weight": 2
+      },
+      {
+        "ticker": "MTD",
+        "weight": 2
+      },
+      {
+        "ticker": "RVTY",
+        "weight": 2
+      },
+      {
+        "ticker": "TXG",
+        "weight": 2
+      },
+      {
+        "ticker": "WAT",
+        "weight": 2
+      }
+    ]
+  },
+  "生命科学：総合": {
+    "category": "ヘルスケア",
+    "parent_theme": "生命科学",
+    "stocks": [
+      {
+        "ticker": "AVTR",
+        "weight": 2
+      },
+      {
+        "ticker": "DHR",
+        "weight": 2
+      },
+      {
+        "ticker": "TMO",
+        "weight": 2
+      }
+    ]
+  },
+  "産業ガス": {
+    "category": "素材",
+    "parent_theme": "化学",
+    "stocks": [
+      {
+        "ticker": "APD",
+        "weight": 2
+      },
+      {
+        "ticker": "LIN",
+        "weight": 2
+      }
+    ]
+  },
+  "産業用電池": {
+    "category": "エネルギー",
+    "parent_theme": "バッテリー",
+    "stocks": [
+      {
+        "ticker": "ELVA",
+        "weight": 2
+      },
+      {
+        "ticker": "ENS",
+        "weight": 2
+      },
+      {
+        "ticker": "MVST",
+        "weight": 2
+      }
+    ]
+  },
+  "産業資材流通": {
+    "category": "資本財",
+    "parent_theme": "産業サービス",
+    "stocks": [
+      {
+        "ticker": "FAST",
+        "weight": 2
+      },
+      {
+        "ticker": "GWW",
+        "weight": 2
+      },
+      {
+        "ticker": "MSM",
+        "weight": 2
+      },
+      {
+        "ticker": "WCC",
+        "weight": 2
+      }
+    ]
+  },
+  "病院運営": {
+    "category": "ヘルスケア",
+    "parent_theme": "医療保険・診療",
+    "stocks": [
+      {
+        "ticker": "CAH",
+        "weight": 2
+      },
+      {
+        "ticker": "COR",
+        "weight": 2
+      },
+      {
+        "ticker": "DVA",
+        "weight": 2
+      },
+      {
+        "ticker": "EHC",
+        "weight": 2
+      },
+      {
+        "ticker": "HCA",
+        "weight": 2
+      },
+      {
+        "ticker": "THC",
+        "weight": 2
+      },
+      {
+        "ticker": "UHS",
+        "weight": 2
+      }
+    ]
+  },
+  "石油探鉱・生産": {
+    "category": "エネルギー",
+    "parent_theme": "石油",
+    "stocks": [
+      {
+        "ticker": "COP",
+        "weight": 2
+      },
+      {
+        "ticker": "OXY",
+        "weight": 2
+      }
+    ]
+  },
+  "石油精製": {
+    "category": "エネルギー",
+    "parent_theme": "石油",
+    "stocks": [
+      {
+        "ticker": "DINO",
+        "weight": 2
+      },
+      {
+        "ticker": "DK",
+        "weight": 2
+      },
+      {
+        "ticker": "MPC",
+        "weight": 2
+      },
+      {
+        "ticker": "PARR",
+        "weight": 2
+      },
+      {
+        "ticker": "PBF",
+        "weight": 2
+      },
+      {
+        "ticker": "PSX",
+        "weight": 2
+      },
+      {
+        "ticker": "VLO",
+        "weight": 2
+      }
+    ]
+  },
+  "石炭：一般炭": {
+    "category": "素材",
+    "parent_theme": "戦略資源",
+    "stocks": [
+      {
+        "ticker": "ARLP",
+        "weight": 2
+      },
+      {
+        "ticker": "HNRG",
+        "weight": 2
+      }
+    ]
+  },
+  "石炭：原料炭": {
+    "category": "素材",
+    "parent_theme": "戦略資源",
+    "stocks": [
+      {
+        "ticker": "AMR",
+        "weight": 2
+      },
+      {
+        "ticker": "BTU",
+        "weight": 2
+      },
+      {
+        "ticker": "CNR",
+        "weight": 2
+      },
+      {
+        "ticker": "HCC",
+        "weight": 2
+      },
+      {
+        "ticker": "METC",
+        "weight": 2
+      },
+      {
+        "ticker": "SXC",
+        "weight": 2
+      }
+    ]
+  },
+  "空調": {
+    "category": "資本財",
+    "parent_theme": "設備インフラ",
+    "stocks": [
+      {
+        "ticker": "CARR",
+        "weight": 2
+      },
+      {
+        "ticker": "LII",
+        "weight": 2
+      },
+      {
+        "ticker": "TT",
+        "weight": 2
+      }
+    ]
+  },
+  "総合飲料": {
+    "category": "消費者必需品",
+    "parent_theme": "食品",
+    "stocks": [
+      {
+        "ticker": "CELH",
+        "weight": 2
+      },
+      {
+        "ticker": "KDP",
+        "weight": 2
+      },
+      {
+        "ticker": "KO",
+        "weight": 2
+      },
+      {
+        "ticker": "MNST",
+        "weight": 2
+      },
+      {
+        "ticker": "PEP",
+        "weight": 2
+      }
+    ]
+  },
+  "自動車メンテナンス": {
+    "category": "消費者一般",
+    "parent_theme": "自動車",
+    "stocks": [
+      {
+        "ticker": "AZO",
+        "weight": 2
+      },
+      {
+        "ticker": "GPC",
+        "weight": 2
+      },
+      {
+        "ticker": "ORLY",
+        "weight": 2
+      }
+    ]
+  },
+  "自動車部品": {
+    "category": "消費者一般",
+    "parent_theme": "自動車",
+    "stocks": [
+      {
+        "ticker": "ALV",
+        "weight": 2
+      },
+      {
+        "ticker": "APTV",
+        "weight": 2
+      },
+      {
+        "ticker": "BWA",
+        "weight": 2
+      },
+      {
+        "ticker": "GNTX",
+        "weight": 2
+      },
+      {
+        "ticker": "LEA",
+        "weight": 2
+      },
+      {
+        "ticker": "MGA",
+        "weight": 2
+      }
+    ]
+  },
+  "自動運転": {
+    "category": "テクノロジー",
+    "parent_theme": "ロボティクス",
+    "stocks": [
+      {
+        "ticker": "AMBA",
+        "weight": 2
+      },
+      {
+        "ticker": "AUR",
+        "weight": 2
+      },
+      {
+        "ticker": "MBLY",
+        "weight": 2
+      },
+      {
+        "ticker": "QCOM",
+        "weight": 2
+      },
+      {
+        "ticker": "TSLA",
+        "weight": 2
+      }
+    ]
+  },
+  "菓子": {
+    "category": "消費者必需品",
+    "parent_theme": "食品",
+    "stocks": [
+      {
+        "ticker": "HSY",
+        "weight": 2
+      },
+      {
+        "ticker": "MDLZ",
+        "weight": 2
+      },
+      {
+        "ticker": "PEP",
+        "weight": 2
+      }
+    ]
+  },
+  "行政DX": {
+    "category": "テクノロジー",
+    "parent_theme": "ソフトウェア",
+    "stocks": [
+      {
+        "ticker": "AXON",
+        "weight": 2
+      },
+      {
+        "ticker": "MSI",
+        "weight": 2
+      },
+      {
+        "ticker": "TYL",
+        "weight": 2
+      }
+    ]
+  },
+  "製紙・段ボール": {
+    "category": "素材",
+    "parent_theme": "包装・容器",
+    "stocks": [
+      {
+        "ticker": "GPK",
+        "weight": 2
+      },
+      {
+        "ticker": "IP",
+        "weight": 2
+      },
+      {
+        "ticker": "PKG",
+        "weight": 2
+      },
+      {
+        "ticker": "SON",
+        "weight": 2
+      },
+      {
+        "ticker": "SW",
+        "weight": 2
+      }
+    ]
+  },
+  "製薬大手": {
+    "category": "ヘルスケア",
+    "parent_theme": "医薬品",
+    "stocks": [
+      {
+        "ticker": "ABBV",
+        "weight": 2
+      },
+      {
+        "ticker": "AZN",
+        "weight": 2
+      },
+      {
+        "ticker": "BMY",
+        "weight": 2
+      },
+      {
+        "ticker": "GSK",
+        "weight": 2
+      },
+      {
+        "ticker": "JNJ",
+        "weight": 2
+      },
+      {
+        "ticker": "LLY",
+        "weight": 2
+      },
+      {
+        "ticker": "MRK",
+        "weight": 2
+      },
+      {
+        "ticker": "NVO",
+        "weight": 2
+      },
+      {
+        "ticker": "NVS",
+        "weight": 2
+      },
+      {
+        "ticker": "PFE",
+        "weight": 2
+      },
+      {
+        "ticker": "SNY",
+        "weight": 2
+      }
+    ]
+  },
+  "資本財リース": {
+    "category": "資本財",
+    "parent_theme": "産業サービス",
+    "stocks": [
+      {
+        "ticker": "AER",
+        "weight": 2
+      },
+      {
+        "ticker": "FTAI",
+        "weight": 2
+      },
+      {
+        "ticker": "GATX",
+        "weight": 2
+      },
+      {
+        "ticker": "TRN",
+        "weight": 2
+      },
+      {
+        "ticker": "URI",
+        "weight": 2
+      }
+    ]
+  },
+  "軍用ドローン": {
+    "category": "資本財",
+    "parent_theme": "防衛テック",
+    "stocks": [
+      {
+        "ticker": "AVAV",
+        "weight": 2
+      },
+      {
+        "ticker": "DPRO",
+        "weight": 2
+      },
+      {
+        "ticker": "KRMN",
+        "weight": 2
+      },
+      {
+        "ticker": "KTOS",
+        "weight": 2
+      },
+      {
+        "ticker": "MRCY",
+        "weight": 2
+      },
+      {
+        "ticker": "ONDS",
+        "weight": 2
+      },
+      {
+        "ticker": "RCAT",
+        "weight": 2
+      }
+    ]
+  },
+  "量子コンピュータ": {
+    "category": "テクノロジー",
+    "parent_theme": "量子",
+    "stocks": [
+      {
+        "ticker": "IONQ",
+        "weight": 2
+      },
+      {
+        "ticker": "QBTS",
+        "weight": 2
+      },
+      {
+        "ticker": "QUBT",
+        "weight": 2
+      },
+      {
+        "ticker": "RGTI",
+        "weight": 2
+      }
+    ]
+  },
+  "金属・機能性パッケージ": {
+    "category": "素材",
+    "parent_theme": "包装・容器",
+    "stocks": [
+      {
+        "ticker": "ATR",
+        "weight": 2
+      },
+      {
+        "ticker": "AVY",
+        "weight": 2
+      },
+      {
+        "ticker": "BALL",
+        "weight": 2
+      },
+      {
+        "ticker": "CCK",
+        "weight": 2
+      }
+    ]
+  },
+  "金鉱山": {
+    "category": "素材",
+    "parent_theme": "貴金属",
+    "stocks": [
+      {
+        "ticker": "AEM",
+        "weight": 2
+      },
+      {
+        "ticker": "AGI",
+        "weight": 2
+      },
+      {
+        "ticker": "AU",
+        "weight": 2
+      },
+      {
+        "ticker": "B",
+        "weight": 2
+      },
+      {
+        "ticker": "CDE",
+        "weight": 2
+      },
+      {
+        "ticker": "FNV",
+        "weight": 2
+      },
+      {
+        "ticker": "GFI",
+        "weight": 2
+      },
+      {
+        "ticker": "HL",
+        "weight": 2
+      },
+      {
+        "ticker": "HMY",
+        "weight": 2
+      },
+      {
+        "ticker": "IAG",
+        "weight": 2
+      },
+      {
+        "ticker": "KGC",
+        "weight": 2
+      },
+      {
+        "ticker": "NEM",
+        "weight": 2
+      },
+      {
+        "ticker": "RGLD",
+        "weight": 2
+      },
+      {
+        "ticker": "WPM",
+        "weight": 2
+      }
+    ]
+  },
+  "鉄": {
+    "category": "素材",
+    "parent_theme": "メタル",
+    "stocks": [
+      {
+        "ticker": "CLF",
+        "weight": 2
+      },
+      {
+        "ticker": "CMC",
+        "weight": 2
+      },
+      {
+        "ticker": "NUE",
+        "weight": 2
+      },
+      {
+        "ticker": "RS",
+        "weight": 2
+      },
+      {
+        "ticker": "STLD",
+        "weight": 2
+      }
+    ]
+  },
+  "鉄道製造・リース": {
+    "category": "資本財",
+    "parent_theme": "産業機械",
+    "stocks": [
+      {
+        "ticker": "FSTR",
+        "weight": 2
+      },
+      {
+        "ticker": "GATX",
+        "weight": 2
+      },
+      {
+        "ticker": "GBX",
+        "weight": 2
+      },
+      {
+        "ticker": "OSK",
+        "weight": 2
+      },
+      {
+        "ticker": "RAIL",
+        "weight": 2
+      },
+      {
+        "ticker": "TRN",
+        "weight": 2
+      },
+      {
+        "ticker": "WAB",
+        "weight": 2
+      }
+    ]
+  },
+  "鉄道貨物": {
+    "category": "資本財",
+    "parent_theme": "物流",
+    "stocks": [
+      {
+        "ticker": "CNI",
+        "weight": 2
+      },
+      {
+        "ticker": "CP",
+        "weight": 2
+      },
+      {
+        "ticker": "CSX",
+        "weight": 2
+      },
+      {
+        "ticker": "NSC",
+        "weight": 2
+      },
+      {
+        "ticker": "UNP",
+        "weight": 2
+      }
+    ]
+  },
+  "銀鉱山": {
+    "category": "素材",
+    "parent_theme": "貴金属",
+    "stocks": [
+      {
+        "ticker": "AG",
+        "weight": 2
+      },
+      {
+        "ticker": "CDE",
+        "weight": 2
+      },
+      {
+        "ticker": "HL",
+        "weight": 2
+      },
+      {
+        "ticker": "PAAS",
+        "weight": 2
+      },
+      {
+        "ticker": "WPM",
+        "weight": 2
+      }
+    ]
+  },
+  "銅鉱山": {
+    "category": "素材",
+    "parent_theme": "戦略資源",
+    "stocks": [
+      {
+        "ticker": "ERO",
+        "weight": 2
+      },
+      {
+        "ticker": "FCX",
+        "weight": 2
+      },
+      {
+        "ticker": "HBM",
+        "weight": 2
+      },
+      {
+        "ticker": "IE",
+        "weight": 2
+      },
+      {
+        "ticker": "SCCO",
+        "weight": 2
+      },
+      {
+        "ticker": "TECK",
+        "weight": 2
+      },
+      {
+        "ticker": "TGB",
+        "weight": 2
+      },
+      {
+        "ticker": "TMQ",
+        "weight": 2
+      }
+    ]
+  },
+  "防衛：サービス": {
+    "category": "資本財",
+    "parent_theme": "防衛",
+    "stocks": [
+      {
+        "ticker": "AMTM",
+        "weight": 2
+      },
+      {
+        "ticker": "BAH",
+        "weight": 2
+      },
+      {
+        "ticker": "CACI",
+        "weight": 2
+      },
+      {
+        "ticker": "KBR",
+        "weight": 2
+      },
+      {
+        "ticker": "LDOS",
+        "weight": 2
+      },
+      {
+        "ticker": "PLTR",
+        "weight": 2
+      },
+      {
+        "ticker": "PSN",
+        "weight": 2
+      },
+      {
+        "ticker": "VSEC",
+        "weight": 2
+      },
+      {
+        "ticker": "VVX",
+        "weight": 2
+      }
+    ]
+  },
+  "防衛：保守部品・MRO": {
+    "category": "資本財",
+    "parent_theme": "防衛",
+    "stocks": [
+      {
+        "ticker": "AIR",
+        "weight": 2
+      },
+      {
+        "ticker": "HEI",
+        "weight": 2
+      },
+      {
+        "ticker": "LOAR",
+        "weight": 2
+      },
+      {
+        "ticker": "TDG",
+        "weight": 2
+      },
+      {
+        "ticker": "VSEC",
+        "weight": 2
+      }
+    ]
+  },
+  "防衛：推進システム": {
+    "category": "資本財",
+    "parent_theme": "防衛",
+    "stocks": [
+      {
+        "ticker": "BWXT",
+        "weight": 2
+      },
+      {
+        "ticker": "GE",
+        "weight": 2
+      },
+      {
+        "ticker": "WWD",
+        "weight": 2
+      }
+    ]
+  },
+  "防衛：素材・部材": {
+    "category": "資本財",
+    "parent_theme": "防衛",
+    "stocks": [
+      {
+        "ticker": "ATI",
+        "weight": 2
+      },
+      {
+        "ticker": "DCO",
+        "weight": 2
+      },
+      {
+        "ticker": "HWM",
+        "weight": 2
+      },
+      {
+        "ticker": "HXL",
+        "weight": 2
+      }
+    ]
+  },
+  "防衛：統合": {
+    "category": "資本財",
+    "parent_theme": "防衛",
+    "stocks": [
+      {
+        "ticker": "BA",
+        "weight": 2
+      },
+      {
+        "ticker": "GD",
+        "weight": 2
+      },
+      {
+        "ticker": "HII",
+        "weight": 2
+      },
+      {
+        "ticker": "LMT",
+        "weight": 2
+      },
+      {
+        "ticker": "NOC",
+        "weight": 2
+      },
+      {
+        "ticker": "RTX",
+        "weight": 2
+      },
+      {
+        "ticker": "TXT",
+        "weight": 2
+      }
+    ]
+  },
+  "防衛：電子・情報通信": {
+    "category": "資本財",
+    "parent_theme": "防衛",
+    "stocks": [
+      {
+        "ticker": "ATRO",
+        "weight": 2
+      },
+      {
+        "ticker": "CTS",
+        "weight": 2
+      },
+      {
+        "ticker": "CW",
+        "weight": 2
+      },
+      {
+        "ticker": "KE",
+        "weight": 2
+      },
+      {
+        "ticker": "LHX",
+        "weight": 2
+      },
+      {
+        "ticker": "MOG.A",
+        "weight": 2
+      },
+      {
+        "ticker": "MRCY",
+        "weight": 2
+      },
+      {
+        "ticker": "SKYT",
+        "weight": 2
+      }
+    ]
+  },
+  "電力貯蔵": {
+    "category": "エネルギー",
+    "parent_theme": "バッテリー",
+    "stocks": [
+      {
+        "ticker": "AMSC",
+        "weight": 2
+      },
+      {
+        "ticker": "EOSE",
+        "weight": 2
+      },
+      {
+        "ticker": "FLNC",
+        "weight": 2
+      },
+      {
+        "ticker": "GWH",
+        "weight": 2
+      },
+      {
+        "ticker": "STEM",
+        "weight": 2
+      },
+      {
+        "ticker": "TE",
+        "weight": 2
+      }
+    ]
+  },
+  "電力：IPP": {
+    "category": "公益",
+    "parent_theme": "電力",
+    "stocks": [
+      {
+        "ticker": "AES",
+        "weight": 2
+      },
+      {
+        "ticker": "BEP",
+        "weight": 2
+      },
+      {
+        "ticker": "CEG",
+        "weight": 2
+      },
+      {
+        "ticker": "CWEN",
+        "weight": 2
+      },
+      {
+        "ticker": "NEE",
+        "weight": 2
+      },
+      {
+        "ticker": "TLN",
+        "weight": 2
+      },
+      {
+        "ticker": "VST",
+        "weight": 2
+      }
+    ]
+  },
+  "電力：規制事業者": {
+    "category": "公益",
+    "parent_theme": "電力",
+    "stocks": [
+      {
+        "ticker": "AEP",
+        "weight": 2
+      },
+      {
+        "ticker": "D",
+        "weight": 2
+      },
+      {
+        "ticker": "DUK",
+        "weight": 2
+      },
+      {
+        "ticker": "ETR",
+        "weight": 2
+      },
+      {
+        "ticker": "EXC",
+        "weight": 2
+      },
+      {
+        "ticker": "NRG",
+        "weight": 2
+      },
+      {
+        "ticker": "SO",
+        "weight": 2
+      },
+      {
+        "ticker": "XEL",
+        "weight": 2
+      }
+    ]
+  },
+  "電気・ガス小売": {
+    "category": "公益",
+    "parent_theme": "電気・ガス小売",
+    "stocks": [
+      {
+        "ticker": "AEE",
+        "weight": 2
+      },
+      {
+        "ticker": "CMS",
+        "weight": 2
+      },
+      {
+        "ticker": "CNP",
+        "weight": 2
+      },
+      {
+        "ticker": "D",
+        "weight": 2
+      },
+      {
+        "ticker": "DTE",
+        "weight": 2
+      },
+      {
+        "ticker": "ED",
+        "weight": 2
+      },
+      {
+        "ticker": "ES",
+        "weight": 2
+      },
+      {
+        "ticker": "NGG",
+        "weight": 2
+      },
+      {
+        "ticker": "PEG",
+        "weight": 2
+      },
+      {
+        "ticker": "SRE",
+        "weight": 2
+      },
+      {
+        "ticker": "WEC",
+        "weight": 2
+      },
+      {
+        "ticker": "XEL",
+        "weight": 2
+      }
+    ]
+  },
+  "電気工事・施工": {
+    "category": "資本財",
+    "parent_theme": "データセンター",
+    "stocks": [
+      {
+        "ticker": "EME",
+        "weight": 2
+      },
+      {
+        "ticker": "FIX",
+        "weight": 2
+      },
+      {
+        "ticker": "MTZ",
+        "weight": 2
+      },
+      {
+        "ticker": "PWR",
+        "weight": 2
+      },
+      {
+        "ticker": "STRL",
+        "weight": 2
+      }
+    ]
+  },
+  "電源インフラ": {
+    "category": "資本財",
+    "parent_theme": "データセンター",
+    "stocks": [
+      {
+        "ticker": "AME",
+        "weight": 2
+      },
+      {
+        "ticker": "APH",
+        "weight": 2
+      },
+      {
+        "ticker": "ETN",
+        "weight": 2
+      },
+      {
+        "ticker": "HUBB",
+        "weight": 2
+      },
+      {
+        "ticker": "POWL",
+        "weight": 2
+      }
+    ]
+  },
+  "食品卸売": {
+    "category": "消費者必需品",
+    "parent_theme": "卸売",
+    "stocks": [
+      {
+        "ticker": "PFGC",
+        "weight": 2
+      },
+      {
+        "ticker": "SYY",
+        "weight": 2
+      },
+      {
+        "ticker": "USFD",
+        "weight": 2
+      }
+    ]
+  },
+  "食品小売・量販店": {
+    "category": "消費者必需品",
+    "parent_theme": "小売",
+    "stocks": [
+      {
+        "ticker": "COST",
+        "weight": 2
+      },
+      {
+        "ticker": "KR",
+        "weight": 2
+      },
+      {
+        "ticker": "TGT",
+        "weight": 2
+      },
+      {
+        "ticker": "WMT",
+        "weight": 2
+      }
+    ]
+  },
+  "食肉": {
+    "category": "消費者必需品",
+    "parent_theme": "食品",
+    "stocks": [
+      {
+        "ticker": "PPC",
+        "weight": 2
+      },
+      {
+        "ticker": "TSN",
+        "weight": 2
+      }
+    ]
+  },
+  "骨材・基礎資材": {
+    "category": "素材",
+    "parent_theme": "建設資材",
+    "stocks": [
+      {
+        "ticker": "ACA",
+        "weight": 2
+      },
+      {
+        "ticker": "CRH",
+        "weight": 2
+      },
+      {
+        "ticker": "EXP",
+        "weight": 2
+      },
+      {
+        "ticker": "KNF",
+        "weight": 2
+      },
+      {
+        "ticker": "MLM",
+        "weight": 2
+      },
+      {
+        "ticker": "USLM",
+        "weight": 2
+      },
+      {
+        "ticker": "VMC",
+        "weight": 2
+      }
+    ]
+  },
+  "高PER": {
+    "category": "その他",
+    "parent_theme": "ファンダメンタルズ",
+    "stocks": [
+      {
+        "ticker": "AXON",
+        "weight": 2
+      },
+      {
+        "ticker": "COST",
+        "weight": 2
+      },
+      {
+        "ticker": "CRWD",
+        "weight": 2
+      },
+      {
+        "ticker": "PLTR",
+        "weight": 2
+      },
+      {
+        "ticker": "WMT",
+        "weight": 2
+      }
+    ]
+  },
+  "高品質ファーストフード": {
+    "category": "消費者一般",
+    "parent_theme": "レストラン",
+    "stocks": [
+      {
+        "ticker": "CMG",
+        "weight": 2
+      },
+      {
+        "ticker": "SHAK",
+        "weight": 2
+      }
+    ]
+  },
+  "高配当": {
+    "category": "その他",
+    "parent_theme": "ファンダメンタルズ",
+    "stocks": [
+      {
+        "ticker": "ABBV",
+        "weight": 2
+      },
+      {
+        "ticker": "AMGN",
+        "weight": 2
+      },
+      {
+        "ticker": "BMY",
+        "weight": 2
+      },
+      {
+        "ticker": "COP",
+        "weight": 2
+      },
+      {
+        "ticker": "CVX",
+        "weight": 2
+      },
+      {
+        "ticker": "LMT",
+        "weight": 2
+      },
+      {
+        "ticker": "MRK",
+        "weight": 2
+      },
+      {
+        "ticker": "TXN",
+        "weight": 2
+      },
+      {
+        "ticker": "VZ",
+        "weight": 2
+      }
+    ]
+  }
+}
