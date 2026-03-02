@@ -1181,20 +1181,20 @@ _action = st.pills("hdr", _pill_options, default=None,
 
 if _action == _compact_icon:
     st.session_state.compact_mode = not st.session_state.compact_mode
-    st.session_state.header_pills = None
+    del st.session_state["header_pills"]
     build_compact_list.clear()
     _load_css.clear()
     st.rerun()
 elif _action == _dark_icon:
     st.session_state.dark_mode = not st.session_state.dark_mode
-    st.session_state.header_pills = None
+    del st.session_state["header_pills"]
     build_theme_list.clear()
     build_surge_list.clear()
     build_compact_list.clear()
     _load_css.clear()
     st.rerun()
 elif _tachi_has_secrets and _action == _tachi_icon:
-    st.session_state.header_pills = None
+    del st.session_state["header_pills"]
     if _tachi_st["status"] == "need_auth":
         uid = st.secrets["tachibana"]["user_id"]
         pwd = st.secrets["tachibana"]["password"]
@@ -1221,7 +1221,7 @@ elif _tachi_has_secrets and _action == _tachi_icon:
         else:
             st.toast(f"エラー: {msg}")
 elif _action == "↺":
-    st.session_state.header_pills = None
+    del st.session_state["header_pills"]
     reload_jp_themes()
     fetch_tachibana_prices.clear()
     build_theme_list.clear()
