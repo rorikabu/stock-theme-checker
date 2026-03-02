@@ -69,7 +69,13 @@ html, body,
 /* ── モバイル対応 ── */
 @media (max-width: 640px) {
     .block-container {
-        padding: 0.3rem 0.5rem 3rem !important;
+        max-width: 100% !important;
+        padding: 0.3rem 0.4rem 3rem !important;
+    }
+    [data-testid="stAppViewContainer"],
+    [data-testid="stMain"],
+    .main {
+        padding-right: 0 !important;
     }
     .logo-img {
         height: 28px;
