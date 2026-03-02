@@ -211,7 +211,8 @@ h1 {
 
 /* ─── ヘッダーpills（Neumorphism） ─── */
 [data-testid="stButtonGroup"] {
-    margin-top: 6px !important;
+    margin-top: 12px !important;
+    margin-bottom: 4px !important;
 }
 [data-testid="stButtonGroup"] [data-baseweb="button-group"] {
     background: var(--bg) !important;
@@ -258,11 +259,11 @@ h1 {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 16px 20px 16px 16px;
+    padding: 11px 16px 11px 14px;
     background: var(--bg);
     border: none;
-    border-radius: 16px;
-    margin-bottom: 12px;
+    border-radius: 14px;
+    margin-bottom: 8px;
     cursor: pointer;
     user-select: none;
     box-shadow: 8px 8px 16px var(--shadow-dark), -8px -8px 16px var(--shadow-light);
