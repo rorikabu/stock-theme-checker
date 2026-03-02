@@ -426,7 +426,7 @@ def _jp_do_fetch(codes):
             except Exception:
                 time.sleep(1)
                 continue
-        time.sleep(0.5)
+        time.sleep(0.3)
 
     state["progress"] = "データ構築中..."
 
