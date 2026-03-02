@@ -66,6 +66,20 @@ html, body,
     margin: 0.3rem 0 0.5rem;
 }
 
+/* ── モバイル対応 ── */
+@media (max-width: 768px) {
+    .block-container {
+        padding: 0.4rem 0.5rem 3rem !important;
+    }
+    [data-testid="stHorizontalBlock"] {
+        flex-wrap: nowrap !important;
+        gap: 0.2rem !important;
+    }
+    [data-testid="stHorizontalBlock"] > [data-testid="stColumn"] {
+        min-width: 0 !important;
+    }
+}
+
 h1 {
     color: var(--text) !important;
     font-size: 1.2rem !important;

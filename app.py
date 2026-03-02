@@ -1137,20 +1137,35 @@ def _load_logo_b64():
     return base64.b64encode(Path("logo.png").read_bytes()).decode()
 
 _logo_b64 = _load_logo_b64()
-_col_title, _col_compact, _col_dark, _col_btn = st.columns([4, 1, 1, 1], vertical_alignment="center")
-with _col_title:
+
+# ── 立花証券の状態チェック（ヘッダー描画前） ──────────────────────────────────
+_tachi_has_secrets = False
+try:
+    _ = st.secrets["tachibana"]["user_id"]
+    _tachi_has_secrets = True
+except Exception:
+    pass
+_tachi_st = _tachibana_state()
+if _tachi_has_secrets and _tachi_st["status"] == "expired":
+    _try_auto_reconnect()
+
+# ── ヘッダー（ログインボタン統合） ────────────────────────────────────────────
+_header_cols = [4, 1, 1, 1, 1] if _tachi_has_secrets else [4, 1, 1, 1]
+_cols = st.columns(_header_cols, vertical_alignment="center")
+with _cols[0]:
     st.markdown(
         f'<img src="data:image/png;base64,{_logo_b64}" class="logo-img">',
         unsafe_allow_html=True,
     )
-with _col_compact:
+_btn_idx = 1
+with _cols[_btn_idx]:
     _compact_label = "🃏" if st.session_state.compact_mode else "📋"
     if st.button(_compact_label, use_container_width=False, help="ざら場モード切替"):
         st.session_state.compact_mode = not st.session_state.compact_mode
         build_compact_list.clear()
         _load_css.clear()
         st.rerun()
-with _col_dark:
+with _cols[_btn_idx + 1]:
     _dark_label = "☀️" if st.session_state.dark_mode else "🌙"
     if st.button(_dark_label, use_container_width=False):
         st.session_state.dark_mode = not st.session_state.dark_mode
@@ -1159,8 +1174,45 @@ with _col_dark:
         build_compact_list.clear()
         _load_css.clear()
         st.rerun()
-with _col_btn:
-    if st.button("↺ 更新", use_container_width=False):
+if _tachi_has_secrets:
+    with _cols[_btn_idx + 2]:
+        _tachi_label = "🟢" if _tachi_st["status"] == "connected" else "🔌"
+        with st.popover(_tachi_label):
+            if _tachi_st["status"] == "connected":
+                st.markdown("**● 接続中**")
+            elif _tachi_st["status"] == "need_auth":
+                st.markdown("📞 **電話認証が必要です**")
+                st.caption("認証後にボタンを押してください")
+                if st.button("認証完了", key="btn_auth_done"):
+                    uid = st.secrets["tachibana"]["user_id"]
+                    pwd = st.secrets["tachibana"]["password"]
+                    status, msg, price_url = _tachibana_login(uid, pwd)
+                    if status == "ok" and price_url:
+                        _tachi_st["price_url"] = price_url
+                        _tachi_st["status"] = "connected"
+                        fetch_tachibana_prices.clear()
+                        st.rerun()
+                    else:
+                        st.error(msg)
+            else:
+                st.markdown("○ **未接続**")
+                if st.button("ログイン", key="btn_tachi_login"):
+                    uid = st.secrets["tachibana"]["user_id"]
+                    pwd = st.secrets["tachibana"]["password"]
+                    with st.spinner("ログイン中..."):
+                        status, msg, price_url = _tachibana_login(uid, pwd)
+                    if status == "ok" and price_url:
+                        _tachi_st["price_url"] = price_url
+                        _tachi_st["status"] = "connected"
+                        fetch_tachibana_prices.clear()
+                        st.rerun()
+                    elif status == "need_auth":
+                        _tachi_st["status"] = "need_auth"
+                        st.rerun()
+                    else:
+                        st.error(msg)
+with _cols[-1]:
+    if st.button("↺", use_container_width=False, help="更新"):
         reload_jp_themes()
         fetch_tachibana_prices.clear()
         build_theme_list.clear()
@@ -1168,67 +1220,6 @@ with _col_btn:
         build_compact_list.clear()
         st.rerun()
 st.markdown('<div class="header-line"></div>', unsafe_allow_html=True)
-
-# ── 立花証券ログインセクション ─────────────────────────────────────────────────
-def _render_login_section():
-    try:
-        _ = st.secrets["tachibana"]["user_id"]
-    except Exception:
-        return
-    state = _tachibana_state()
-    if state["status"] == "expired":
-        _try_auto_reconnect()
-    with st.expander("🔌 立花証券（リアルタイム株価）", expanded=False):
-        if state["status"] == "connected":
-            st.markdown(
-                '<span style="color:#22c55e;font-size:0.85rem;">● 接続中</span>',
-                unsafe_allow_html=True,
-            )
-        elif state["status"] == "need_auth":
-            st.warning("📞 電話認証が必要です。認証後に「認証完了」ボタンを押してください。")
-            if st.button("認証完了", key="btn_auth_done"):
-                try:
-                    uid = st.secrets["tachibana"]["user_id"]
-                    pwd = st.secrets["tachibana"]["password"]
-                except Exception:
-                    st.error("認証情報が見つかりません")
-                    return
-                with st.spinner("再ログイン中..."):
-                    status, msg, price_url = _tachibana_login(uid, pwd)
-                if status == "ok" and price_url:
-                    state["price_url"] = price_url
-                    state["status"] = "connected"
-                    fetch_tachibana_prices.clear()
-                    st.rerun()
-                else:
-                    st.error(msg)
-        else:
-            st.markdown(
-                '<span style="color:#8a94a6;font-size:0.85rem;">○ 未接続</span>',
-                unsafe_allow_html=True,
-            )
-        if state["status"] != "connected":
-            if st.button("ログイン", key="btn_tachi_login"):
-                try:
-                    uid = st.secrets["tachibana"]["user_id"]
-                    pwd = st.secrets["tachibana"]["password"]
-                except Exception:
-                    st.error("認証情報が見つかりません")
-                    return
-                with st.spinner("ログイン中..."):
-                    status, msg, price_url = _tachibana_login(uid, pwd)
-                if status == "ok" and price_url:
-                    state["price_url"] = price_url
-                    state["status"] = "connected"
-                    fetch_tachibana_prices.clear()
-                    st.rerun()
-                elif status == "need_auth":
-                    state["status"] = "need_auth"
-                    st.rerun()
-                else:
-                    st.error(msg)
-
-_render_login_section()
 
 # コンパクトモード時: 画面幅を最大化
 if st.session_state.compact_mode:
