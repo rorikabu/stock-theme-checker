@@ -67,16 +67,24 @@ html, body,
 }
 
 /* ── モバイル対応 ── */
+/* ヘッダーボタン行: 常に横並び */
+.header-btns {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center;
+    gap: 6px;
+    margin: 4px 0;
+}
+.header-btns > div {
+    flex: 0 0 auto;
+}
 @media (max-width: 768px) {
     .block-container {
-        padding: 0.4rem 0.5rem 3rem !important;
+        padding: 0.3rem 0.5rem 3rem !important;
     }
-    [data-testid="stHorizontalBlock"] {
-        flex-wrap: nowrap !important;
-        gap: 0.2rem !important;
-    }
-    [data-testid="stHorizontalBlock"] > [data-testid="stColumn"] {
-        min-width: 0 !important;
+    .logo-img {
+        height: 28px;
     }
 }
 

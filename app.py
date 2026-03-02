@@ -1149,25 +1149,37 @@ _tachi_st = _tachibana_state()
 if _tachi_has_secrets and _tachi_st["status"] == "expired":
     _try_auto_reconnect()
 
-# ── ヘッダー（ログインボタン統合） ────────────────────────────────────────────
-_header_cols = [4, 1, 1, 1, 1] if _tachi_has_secrets else [4, 1, 1, 1]
-_cols = st.columns(_header_cols, vertical_alignment="center")
-with _cols[0]:
-    st.markdown(
-        f'<img src="data:image/png;base64,{_logo_b64}" class="logo-img">',
-        unsafe_allow_html=True,
-    )
-_btn_idx = 1
-with _cols[_btn_idx]:
+# ── ヘッダー（HTML横並び + Streamlitウィジェット） ────────────────────────────
+# ロゴ + 接続状態を1行で表示
+_tachi_dot = ""
+if _tachi_has_secrets:
+    if _tachi_st["status"] == "connected":
+        _tachi_dot = '<span style="color:#22c55e;font-size:0.7rem;margin-left:8px;">● 接続中</span>'
+    elif _tachi_st["status"] == "need_auth":
+        _tachi_dot = '<span style="color:#f59e0b;font-size:0.7rem;margin-left:8px;">● 要認証</span>'
+    else:
+        _tachi_dot = '<span style="color:#8a94a6;font-size:0.7rem;margin-left:8px;">○ 未接続</span>'
+
+st.markdown(
+    f'<div style="display:flex;align-items:center;">'
+    f'<img src="data:image/png;base64,{_logo_b64}" class="logo-img">'
+    f'{_tachi_dot}</div>',
+    unsafe_allow_html=True,
+)
+
+# ボタン行（Streamlitの列だが少数で横並び維持しやすい）
+_n_btns = 4 if _tachi_has_secrets else 3
+_btn_cols = st.columns(_n_btns)
+with _btn_cols[0]:
     _compact_label = "🃏" if st.session_state.compact_mode else "📋"
-    if st.button(_compact_label, use_container_width=False, help="ざら場モード切替"):
+    if st.button(_compact_label, use_container_width=True, help="ざら場モード切替"):
         st.session_state.compact_mode = not st.session_state.compact_mode
         build_compact_list.clear()
         _load_css.clear()
         st.rerun()
-with _cols[_btn_idx + 1]:
+with _btn_cols[1]:
     _dark_label = "☀️" if st.session_state.dark_mode else "🌙"
-    if st.button(_dark_label, use_container_width=False):
+    if st.button(_dark_label, use_container_width=True):
         st.session_state.dark_mode = not st.session_state.dark_mode
         build_theme_list.clear()
         build_surge_list.clear()
@@ -1175,9 +1187,9 @@ with _cols[_btn_idx + 1]:
         _load_css.clear()
         st.rerun()
 if _tachi_has_secrets:
-    with _cols[_btn_idx + 2]:
+    with _btn_cols[2]:
         _tachi_label = "🟢" if _tachi_st["status"] == "connected" else "🔌"
-        with st.popover(_tachi_label):
+        with st.popover(_tachi_label, use_container_width=True):
             if _tachi_st["status"] == "connected":
                 st.markdown("**● 接続中**")
             elif _tachi_st["status"] == "need_auth":
@@ -1211,8 +1223,8 @@ if _tachi_has_secrets:
                         st.rerun()
                     else:
                         st.error(msg)
-with _cols[-1]:
-    if st.button("↺", use_container_width=False, help="更新"):
+with _btn_cols[-1]:
+    if st.button("↺ 更新", use_container_width=True):
         reload_jp_themes()
         fetch_tachibana_prices.clear()
         build_theme_list.clear()
