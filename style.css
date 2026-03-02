@@ -70,12 +70,18 @@ html, body,
 @media (max-width: 640px) {
     .block-container {
         max-width: 100% !important;
-        padding: 0.3rem 0.4rem 3rem !important;
+        width: 100% !important;
+        padding: 0.3rem 0.5rem 3rem !important;
+        box-sizing: border-box !important;
     }
     [data-testid="stAppViewContainer"],
     [data-testid="stMain"],
-    .main {
+    [data-testid="stMainBlockContainer"],
+    .main,
+    .stMain {
+        padding-left: 0 !important;
         padding-right: 0 !important;
+        max-width: 100% !important;
     }
     .logo-img {
         height: 28px;
