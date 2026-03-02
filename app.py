@@ -211,8 +211,9 @@ def _tachibana_login(user_id: str, password: str) -> tuple:
     elif login_code in ("10089", "1"):
         return ("need_auth", f"電話認証が必要です: {login_msg}", "")
     else:
-        keys_preview = list(d.keys())[:10]
-        return ("error", f"ログイン失敗 [{login_code}]: {login_msg} (応答キー: {keys_preview})", "")
+        status_287 = d.get("287", "")
+        msg_286 = d.get("286", "")
+        return ("error", f"ログイン失敗: status={status_287}, msg={msg_286}", "")
 
 
 def _try_auto_reconnect():
