@@ -305,7 +305,7 @@ _JP_CACHE_FILE = Path(".streamlit") / "jp_data.pkl"
 @st.cache_resource
 def _jp_state():
     """プロセス内で保持されるバックグラウンドフェッチ状態"""
-    return {"data": None, "volume": None, "fresh_ts": 0.0, "fetching": False}
+    return {"data": None, "volume": None, "fresh_ts": 0.0, "fetching": False, "progress": ""}
 
 
 def _jp_file_load():
@@ -359,7 +359,11 @@ def _jp_do_fetch(codes):
 
     price_dict = {}
     volume_dict = {}
+    total = len(codes)
+    state = _jp_state()
     for i, code in enumerate(codes):
+        if i % 50 == 0:
+            state["progress"] = f"{i}/{total}"
         for attempt in range(2):
             try:
                 resp = requests.get(
@@ -1220,7 +1224,7 @@ def _render_jp_tab():
     _state = _jp_state()
     if _state["fetching"]:
         st.markdown(
-            f'<div style="color:{THEME["text_sub"]};font-size:0.72rem;margin-bottom:4px;">● データ更新中...</div>',
+            f'<div style="color:{THEME["text_sub"]};font-size:0.72rem;margin-bottom:4px;">● データ更新中... {_state.get("progress", "")}</div>',
             unsafe_allow_html=True,
         )
 
