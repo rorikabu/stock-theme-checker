@@ -210,6 +210,9 @@ h1 {
 }
 
 /* ─── ヘッダーpills（Neumorphism） ─── */
+[data-testid="stButtonGroup"] {
+    margin-top: 6px !important;
+}
 [data-testid="stButtonGroup"] [data-baseweb="button-group"] {
     background: var(--bg) !important;
     border-radius: 12px !important;
