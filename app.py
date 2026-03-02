@@ -154,9 +154,9 @@ JQUANTS_API_KEY = st.secrets["jquants"]["api_key"]
 
 
 def is_trading_hours() -> bool:
-    """東証取引時間中か（平日 9:00〜15:30）"""
+    """東証取引時間中か（平日 9:00〜15:30 JST）"""
     from datetime import time as _t
-    now = datetime.now()
+    now = datetime.now(timezone(timedelta(hours=9)))
     if now.weekday() >= 5:           # 土日
         return False
     return _t(9, 0) <= now.time() <= _t(15, 30)
@@ -165,6 +165,7 @@ def is_trading_hours() -> bool:
 _TACHIBANA_SECRETS = Path(".streamlit/secrets.toml")
 _TACHIBANA_COLUMNS = "pDPP,pPRP,pDYRP,pDYWP"  # 現値,前日終値,前日比額,前日比%
 _TACHIBANA_AUTH_URL = "https://kabuka.e-shiten.jp/e_api_v4r8/auth/"
+_JST = timezone(timedelta(hours=9))
 _tachibana_p_no_login = 900
 
 
@@ -177,7 +178,7 @@ def _tachibana_state():
 def _tachibana_login(user_id: str, password: str) -> tuple:
     """立花証券にログイン。戻り値: (status, message, price_url)"""
     global _tachibana_p_no_login
-    now = datetime.now().strftime("%Y.%m.%d-%H:%M:%S.000")
+    now = datetime.now(_JST).strftime("%Y.%m.%d-%H:%M:%S.000")
     payload = {
         "p_no": str(_tachibana_p_no_login),
         "p_sd_date": now,
@@ -516,7 +517,7 @@ def _fetch_tachibana_batch(batch: tuple, price_url: str, p_no: int, _retry: bool
     """1バッチ分の株価を取得して dict を返す（内部用・キャッシュなし）"""
     global _tachibana_p_no_offset
     effective_p_no = p_no + _tachibana_p_no_offset
-    now_str = datetime.now().strftime("%Y.%m.%d-%H:%M:%S.000")
+    now_str = datetime.now(_JST).strftime("%Y.%m.%d-%H:%M:%S.000")
     payload = {
         "p_no": str(effective_p_no),
         "p_sd_date": now_str,
