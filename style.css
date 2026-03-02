@@ -20,23 +20,6 @@
   --surge-mid:    #fb923c;
 }
 
-/* ── ダークモード変数 ── */
-.dark-mode {
-  --bg:           #1e2328;
-  --text:         #e2e8f0;
-  --text-sub:     #cbd5e0;
-  --text-muted:   #94a3b8;
-  --border:       #2d3748;
-  --shadow-dark:  #161a1e;
-  --shadow-light: #262c32;
-  --accent:       #818cf8;
-  --accent-hover: #a5b4fc;
-  --up:           #f87171;
-  --down:         #22d3ee;
-  --surge-high:   #fbbf24;
-  --surge-mid:    #fb923c;
-}
-
 /* ── ベース ── */
 html, body,
 [data-testid="stAppViewContainer"],

@@ -263,7 +263,7 @@ def _us_cache_load() -> "pd.DataFrame | None":
 
 
 def _us_cache_save(df: pd.DataFrame):
-    """DataFrame を当日付きで JSON に保存（843銘柄 × 400日 ≈ 3MB）。"""
+    """DataFrame を当日付きで JSON に保存。"""
     try:
         _US_CACHE_FILE.parent.mkdir(parents=True, exist_ok=True)
         cache = {
@@ -365,9 +365,7 @@ def _jp_file_save(price_df, volume_df):
 
 
 def _jp_do_fetch(codes):
-    """J-Quants V2 APIから株価データを一括取得（日付ベース・高速版）
-    1日分の全銘柄を1リクエストで取得 → 約250リクエストで完了（2〜3分）
-    """
+    """J-Quants V2 APIから株価データを一括取得（日付ベース）"""
     headers = {"x-api-key": JQUANTS_API_KEY}
     today = datetime.today().date()
     start_date = today - timedelta(days=45)
@@ -511,25 +509,6 @@ def get_jp_data(codes):
 
 
 # ── Tachibana API（リアルタイム株価） ─────────────────────────────────────────
-_TACHIBANA_CODES_FILE = Path(".streamlit") / "tachibana_codes.json"
-
-
-def _save_tachibana_codes(codes: list[str]):
-    """Tachibanaで取得できたコード一覧を保存（次回J-Quants絞り込みに使用）"""
-    try:
-        _TACHIBANA_CODES_FILE.parent.mkdir(parents=True, exist_ok=True)
-        with open(_TACHIBANA_CODES_FILE, "w", encoding="utf-8") as f:
-            json.dump({"codes": codes}, f, separators=(",", ":"))
-    except Exception:
-        pass
-
-
-def _load_tachibana_codes() -> list[str] | None:
-    try:
-        with open(_TACHIBANA_CODES_FILE, encoding="utf-8") as f:
-            return json.load(f).get("codes")
-    except Exception:
-        return None
 
 
 def _load_tachibana_price_url() -> str:
@@ -631,39 +610,6 @@ def _fetch_tachibana_batch(batch: tuple, price_url: str, p_no: int, _retry: bool
         except (ValueError, TypeError):
             pass
     return result
-
-
-# ── 日本株 1D 日次キャッシュ（Tachibana由来） ─────────────────────────────────
-_JP_1D_CACHE_FILE = Path(".streamlit") / "cache_jp_1d.json"
-
-
-def _save_jp_1d_cache(prices: dict):
-    """Tachibana価格データを当日付きJSONとして保存（1D期間の高速化用）"""
-    try:
-        cache = {
-            "date": datetime.today().strftime("%Y-%m-%d"),
-            "prices": {
-                code: {k: v[k] for k in ("change_pct", "price", "prev", "change_amt")}
-                for code, v in prices.items()
-            },
-        }
-        _JP_1D_CACHE_FILE.parent.mkdir(parents=True, exist_ok=True)
-        with open(_JP_1D_CACHE_FILE, "w", encoding="utf-8") as f:
-            json.dump(cache, f, separators=(",", ":"))
-    except Exception:
-        pass
-
-
-def _load_jp_1d_cache() -> dict | None:
-    """当日のTachibana由来1Dキャッシュを読み込む（日付が違えばNone）"""
-    try:
-        with open(_JP_1D_CACHE_FILE, encoding="utf-8") as f:
-            cache = json.load(f)
-        if cache.get("date") != datetime.today().strftime("%Y-%m-%d"):
-            return None
-        return cache.get("prices")
-    except Exception:
-        return None
 
 
 @st.cache_data(ttl=300, show_spinner=False)
@@ -1195,18 +1141,7 @@ elif _action == _dark_icon:
     st.rerun()
 elif _tachi_has_secrets and _action == _tachi_icon:
     del st.session_state["header_pills"]
-    if _tachi_st["status"] == "need_auth":
-        uid = st.secrets["tachibana"]["user_id"]
-        pwd = st.secrets["tachibana"]["password"]
-        status, msg, price_url = _tachibana_login(uid, pwd)
-        if status == "ok" and price_url:
-            _tachi_st["price_url"] = price_url
-            _tachi_st["status"] = "connected"
-            fetch_tachibana_prices.clear()
-            st.rerun()
-        else:
-            st.toast(f"認証エラー: {msg}")
-    elif _tachi_st["status"] != "connected":
+    if _tachi_st["status"] != "connected":
         uid = st.secrets["tachibana"]["user_id"]
         pwd = st.secrets["tachibana"]["password"]
         status, msg, price_url = _tachibana_login(uid, pwd)
