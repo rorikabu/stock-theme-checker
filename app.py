@@ -244,7 +244,7 @@ _US_CACHE_FILE = Path(".streamlit") / "cache_us_prices.json"
 @st.cache_resource
 def _us_state():
     """プロセス内メモリキャッシュ: 当日分を保持"""
-    return {"df": None, "date": ""}
+    return {"df": None, "date": "", "fetching": False, "progress": ""}
 
 
 def _us_cache_load() -> "pd.DataFrame | None":
@@ -281,21 +281,51 @@ def _us_cache_save(df: pd.DataFrame):
 
 
 def _fetch_us_yf(tickers: tuple) -> pd.DataFrame:
-    """yfinance で全銘柄を一括取得（初回 or 日付変わり時のみ実行）。"""
+    """yfinance で銘柄を分割取得（レート制限回避）。"""
     start = datetime.today() - timedelta(days=400)
-    for _ in range(3):
-        try:
-            raw = yf.download(list(tickers), start=start, auto_adjust=True, progress=False, threads=True)
-            if raw.empty:
-                continue
-            close = raw["Close"]
-            if isinstance(close, pd.Series):
-                close = close.to_frame(tickers[0])
-            if not close.empty:
-                return close
-        except Exception:
-            pass
+    state = _us_state()
+    batch_size = 50
+    all_dfs = []
+    ticker_list = list(tickers)
+    total_batches = (len(ticker_list) + batch_size - 1) // batch_size
+
+    for b in range(total_batches):
+        batch = ticker_list[b * batch_size : (b + 1) * batch_size]
+        state["progress"] = f"{b * batch_size}/{len(ticker_list)}"
+        for attempt in range(3):
+            try:
+                raw = yf.download(batch, start=start, auto_adjust=True, progress=False, threads=True)
+                if raw.empty:
+                    break
+                close = raw["Close"] if len(batch) > 1 else raw["Close"].to_frame(batch[0])
+                if not close.empty:
+                    all_dfs.append(close)
+                break
+            except Exception:
+                time.sleep(5)
+        if b < total_batches - 1:
+            time.sleep(2)
+
+    if all_dfs:
+        return pd.concat(all_dfs, axis=1)
     return pd.DataFrame(columns=list(tickers))
+
+
+def _us_bg_fetch(tickers):
+    """米国株データをバックグラウンドで取得"""
+    state = _us_state()
+    if state["fetching"]:
+        return
+    state["fetching"] = True
+    try:
+        df = _fetch_us_yf(tickers)
+        if not df.empty:
+            _us_cache_save(df)
+            state["df"] = df
+            state["date"] = datetime.today().strftime("%Y-%m-%d")
+    finally:
+        state["fetching"] = False
+        state["progress"] = ""
 
 
 # ── データ取得（日本株・J-Quants V2） ─────────────────────────────────────────
@@ -1024,27 +1054,21 @@ all_us_tickers = tuple(dict.fromkeys(t for theme in US_THEMES for t in theme["ti
 # JP: TSVの全銘柄を対象（J-Quantsで取得）
 all_jp_codes = tuple(dict.fromkeys(c for th in JP_THEMES for c in th["tickers"]))
 
-# US: 当日キャッシュ優先 → なければ yfinance 一括取得
+# US: 当日キャッシュ優先 → なければバックグラウンドで取得
 _us = _us_state()
 _today_str = datetime.today().strftime("%Y-%m-%d")
 if _us["df"] is not None and _us["date"] == _today_str:
-    # ① メモリキャッシュ（同一プロセス内の再レンダリング → 即返却）
     us_data = _us["df"]
 else:
     _file_df = _us_cache_load()
     if _file_df is not None:
-        # ② ファイルキャッシュ（当日分あり → 即返却、API呼び出しゼロ）
         us_data = _file_df
         _us["df"] = _file_df
         _us["date"] = _today_str
     else:
-        # ③ キャッシュ無し or 日付変わり → 一括取得してキャッシュ保存
-        with st.spinner(f"米国株データ取得中（{len(all_us_tickers)}銘柄・本日1回のみ）..."):
-            us_data = _fetch_us_yf(all_us_tickers)
-        if not us_data.empty:
-            _us_cache_save(us_data)
-            _us["df"] = us_data
-            _us["date"] = _today_str
+        us_data = pd.DataFrame(columns=list(all_us_tickers))
+        if not _us["fetching"]:
+            threading.Thread(target=_us_bg_fetch, args=(all_us_tickers,), daemon=True).start()
 
 # JP: ファイルキャッシュがあれば即返却、なければ同期フェッチ（初回のみ）
 jp_data, jp_volume = get_jp_data(all_jp_codes)
@@ -1332,6 +1356,12 @@ def _render_surge_tab():
 
 @st.fragment
 def _render_us_tab():
+    _us_s = _us_state()
+    if _us_s["fetching"]:
+        st.markdown(
+            f'<div style="color:{THEME["text_sub"]};font-size:0.72rem;margin-bottom:4px;">● 米国株データ取得中... {_us_s.get("progress", "")}</div>',
+            unsafe_allow_html=True,
+        )
     _col_period_us, _col_order_us = st.columns([5, 3])
     with _col_period_us:
         period_us = st.radio(
