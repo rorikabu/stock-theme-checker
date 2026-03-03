@@ -252,7 +252,7 @@ def _us_cache_load() -> "pd.DataFrame | None":
     try:
         with open(_US_CACHE_FILE, encoding="utf-8") as f:
             cache = json.load(f)
-        if cache.get("date") != datetime.today().strftime("%Y-%m-%d"):
+        if cache.get("date") != datetime.now(_JST).strftime("%Y-%m-%d"):
             return None
         idx = pd.to_datetime(cache["dates"])
         df = pd.DataFrame(cache["prices"], index=idx)
@@ -267,7 +267,7 @@ def _us_cache_save(df: pd.DataFrame):
     try:
         _US_CACHE_FILE.parent.mkdir(parents=True, exist_ok=True)
         cache = {
-            "date": datetime.today().strftime("%Y-%m-%d"),
+            "date": datetime.now(_JST).strftime("%Y-%m-%d"),
             "dates": [d.strftime("%Y-%m-%d") for d in df.index],
             "prices": {
                 col: [None if pd.isna(v) else round(float(v), 4) for v in df[col]]
@@ -282,7 +282,7 @@ def _us_cache_save(df: pd.DataFrame):
 
 def _fetch_us_yf(tickers: tuple) -> pd.DataFrame:
     """yfinance で銘柄を分割取得（レート制限回避）。"""
-    start = datetime.today() - timedelta(days=45)
+    start = datetime.now(_JST) - timedelta(days=45)
     state = _us_state()
     batch_size = 50
     all_dfs = []
@@ -322,7 +322,7 @@ def _us_bg_fetch(tickers):
         if not df.empty:
             _us_cache_save(df)
             state["df"] = df
-            state["date"] = datetime.today().strftime("%Y-%m-%d")
+            state["date"] = datetime.now(_JST).strftime("%Y-%m-%d")
     finally:
         state["fetching"] = False
         state["progress"] = ""
@@ -1002,7 +1002,7 @@ all_jp_codes = tuple(dict.fromkeys(c for th in JP_THEMES for c in th["tickers"])
 
 # US: 当日キャッシュ優先 → なければバックグラウンドで取得
 _us = _us_state()
-_today_str = datetime.today().strftime("%Y-%m-%d")
+_today_str = datetime.now(_JST).strftime("%Y-%m-%d")
 if _us["df"] is not None and _us["date"] == _today_str:
     us_data = _us["df"]
 else:
