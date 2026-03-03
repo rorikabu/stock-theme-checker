@@ -470,7 +470,7 @@ _JP_REFRESH_MIN  = 45
 def _jp_needs_refresh(fresh_ts: float) -> bool:
     """毎日15:45以降に1回だけ更新が必要か判定"""
     from datetime import time as _t
-    now = datetime.now()
+    now = datetime.now(_JST)
     today_due = now.replace(hour=_JP_REFRESH_HOUR, minute=_JP_REFRESH_MIN, second=0, microsecond=0)
     if now.time() >= _t(_JP_REFRESH_HOUR, _JP_REFRESH_MIN):
         # 15:45以降 → 今日の15:45より前のデータなら更新

@@ -1,0 +1,38 @@
+name: Update JP Stock Data
+
+on:
+  schedule:
+    # 平日 JST 16:00 = UTC 07:00
+    - cron: '0 7 * * 1-5'
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install requests pandas
+
+      - name: Fetch J-Quants data
+        env:
+          JQUANTS_API_KEY: ${{ secrets.JQUANTS_API_KEY }}
+          DAYS_BACK: '45'
+        run: python fetch_jquants.py
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .streamlit/jp_data.pkl
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Auto-update JP stock data $(date -u +%Y-%m-%d)"
+            git push
+          fi
