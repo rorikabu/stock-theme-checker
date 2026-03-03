@@ -47,7 +47,8 @@ def load_us_themes() -> list[dict]:
         return []
     themes = []
     for name, v in raw.items():
-        tickers = [s["ticker"] for s in v.get("stocks", []) if "ticker" in s]
+        stocks = [s for s in v.get("stocks", []) if "ticker" in s]
+        tickers = [s["ticker"] for s in stocks]
         if not tickers:
             continue
         cat = v.get("category", "その他")
@@ -57,6 +58,8 @@ def load_us_themes() -> list[dict]:
             "parent_theme": v.get("parent_theme", ""),
             "cat_color":    _CATEGORY_COLORS.get(cat, "#6b7280"),
             "tickers":      tickers,
+            "names":        {s["ticker"]: s["name"] for s in stocks if "name" in s},
+            "weights":      {s["ticker"]: s.get("weight", 2) for s in stocks},
         })
     return themes
 
