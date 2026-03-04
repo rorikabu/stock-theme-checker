@@ -1144,20 +1144,20 @@ elif _action == _dark_icon:
     st.rerun()
 elif _tachi_has_secrets and _action == _tachi_icon:
     del st.session_state["header_pills"]
-    if _tachi_st["status"] != "connected":
-        uid = st.secrets["tachibana"]["user_id"]
-        pwd = st.secrets["tachibana"]["password"]
-        status, msg, price_url = _tachibana_login(uid, pwd)
-        if status == "ok" and price_url:
-            _tachi_st["price_url"] = price_url
-            _tachi_st["status"] = "connected"
-            fetch_tachibana_prices.clear()
-            st.rerun()
-        elif status == "need_auth":
-            _tachi_st["status"] = "need_auth"
-            st.toast("📞 電話認証後にもう一度押してください")
-        else:
-            st.toast(f"エラー: {msg}")
+    uid = st.secrets["tachibana"]["user_id"]
+    pwd = st.secrets["tachibana"]["password"]
+    status, msg, price_url = _tachibana_login(uid, pwd)
+    if status == "ok" and price_url:
+        _tachi_st["price_url"] = price_url
+        _tachi_st["status"] = "connected"
+        fetch_tachibana_prices.clear()
+        st.rerun()
+    elif status == "need_auth":
+        _tachi_st["status"] = "need_auth"
+        st.toast("📞 電話認証後にもう一度押してください")
+    else:
+        _tachi_st["status"] = "disconnected"
+        st.toast(f"エラー: {msg}")
 elif _action == "↺":
     del st.session_state["header_pills"]
     reload_jp_themes()
@@ -1215,6 +1215,14 @@ def _render_jp_tab():
 
     _tachibana_url = _load_tachibana_price_url()
     _tachibana_prices = fetch_tachibana_prices(all_jp_codes, _tachibana_url)
+
+    # セッション切れ検出: connected なのにデータ取得失敗 → 自動再ログイン
+    if _tachibana_prices is None and _tachibana_url and _tachi_st["status"] == "connected":
+        _try_auto_reconnect()
+        _tachibana_url = _load_tachibana_price_url()
+        if _tachibana_url:
+            fetch_tachibana_prices.clear()
+            _tachibana_prices = fetch_tachibana_prices(all_jp_codes, _tachibana_url)
 
     _col_period_jp, _col_order_jp = st.columns([5, 3])
     with _col_period_jp:
