@@ -2,8 +2,8 @@ name: Update US Stock Data
 
 on:
   schedule:
-    # 平日 JST 6:30 = UTC 21:30（米国市場閉場後）
-    - cron: '30 21 * * 1-5'
+    # 平日 JST 6:00 = UTC 21:00（米国市場閉場後）
+    - cron: '0 21 * * 1-5'
   workflow_dispatch:
 
 permissions:
