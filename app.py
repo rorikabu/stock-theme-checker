@@ -178,6 +178,39 @@ def _tachibana_state():
     return {"price_url": "", "status": "disconnected"}
 
 
+@st.cache_resource
+def _tachibana_fetch_state():
+    """立花証券のリアルタイム株価キャッシュ（バックグラウンド取得用）"""
+    return {"prices": None, "fetching": False, "ts": 0.0}
+
+
+@st.cache_resource
+def _tachibana_login_guard():
+    """再ログイン回数の制限状態（5分間に2回まで）"""
+    return {"attempts": [], "locked_until": 0.0}
+
+
+def _can_attempt_login() -> bool:
+    """ログイン試行が許可されているか判定（5分間に2回まで）"""
+    guard = _tachibana_login_guard()
+    now = datetime.now().timestamp()
+    if now < guard["locked_until"]:
+        return False
+    # 5分以上前の試行を除去
+    guard["attempts"] = [t for t in guard["attempts"] if now - t < 300]
+    if len(guard["attempts"]) >= 2:
+        # 上限到達 → 5分間ロック
+        guard["locked_until"] = now + 300
+        return False
+    return True
+
+
+def _record_login_attempt():
+    """ログイン試行を記録"""
+    guard = _tachibana_login_guard()
+    guard["attempts"].append(datetime.now().timestamp())
+
+
 def _tachibana_login(user_id: str, password: str) -> tuple:
     """立花証券にログイン。戻り値: (status, message, price_url)"""
     global _tachibana_p_no_login
@@ -221,7 +254,9 @@ def _tachibana_login(user_id: str, password: str) -> tuple:
 
 
 def _try_auto_reconnect():
-    """セッション切れ時の自動再ログイン"""
+    """セッション切れ時の自動再ログイン（5分間に2回まで）"""
+    if not _can_attempt_login():
+        return
     state = _tachibana_state()
     try:
         user_id = st.secrets["tachibana"]["user_id"]
@@ -229,11 +264,12 @@ def _try_auto_reconnect():
     except Exception:
         state["status"] = "disconnected"
         return
+    _record_login_attempt()
     status, msg, price_url = _tachibana_login(user_id, password)
     if status == "ok" and price_url:
         state["price_url"] = price_url
         state["status"] = "connected"
-        fetch_tachibana_prices.clear()
+        clear_tachibana_cache()
     elif status == "need_auth":
         state["status"] = "need_auth"
     else:
@@ -615,9 +651,8 @@ def _fetch_tachibana_batch(batch: tuple, price_url: str, p_no: int, _retry: bool
     return result
 
 
-@st.cache_data(ttl=300, show_spinner=False)
-def fetch_tachibana_prices(codes: tuple, price_url: str) -> dict | None:
-    """Tachibana API で全銘柄を100件ずつバッチ取得（5分キャッシュ）。
+def _do_fetch_tachibana_prices(codes: tuple, price_url: str) -> dict | None:
+    """Tachibana API で全銘柄を100件ずつバッチ取得。
     戻り値: {code: {price, prev, change_amt, change_pct}} or None
     """
     if not price_url:
@@ -635,6 +670,48 @@ def fetch_tachibana_prices(codes: tuple, price_url: str) -> dict | None:
         # セッション切れ：途中データは不完全なので None を返す（保存しない）
         return None
     return all_prices if all_prices else None
+
+
+def _tachibana_bg_fetch(codes, price_url):
+    """バックグラウンドで立花証券の株価を取得"""
+    state = _tachibana_fetch_state()
+    if state["fetching"]:
+        return
+    state["fetching"] = True
+    try:
+        prices = _do_fetch_tachibana_prices(codes, price_url)
+        if prices is not None:
+            state["prices"] = prices
+            state["ts"] = datetime.now().timestamp()
+    finally:
+        state["fetching"] = False
+
+
+def get_tachibana_prices(codes, price_url):
+    """立花証券の株価を取得（非ブロッキング）。
+    キャッシュが新鮮(5分以内)ならそのまま返す。
+    古い/なければバックグラウンドで取得開始し、現在のキャッシュを返す。
+    """
+    if not price_url:
+        return None
+    state = _tachibana_fetch_state()
+    now = datetime.now().timestamp()
+    if state["prices"] and (now - state["ts"]) < 300:
+        return state["prices"]
+    if not state["fetching"]:
+        threading.Thread(
+            target=_tachibana_bg_fetch,
+            args=(codes, price_url),
+            daemon=True,
+        ).start()
+    return state["prices"]
+
+
+def clear_tachibana_cache():
+    """立花証券のキャッシュをクリア"""
+    state = _tachibana_fetch_state()
+    state["prices"] = None
+    state["ts"] = 0.0
 
 
 # ── ユーティリティ ────────────────────────────────────────────────────────────
@@ -1022,6 +1099,10 @@ else:
 # JP: ファイルキャッシュがあれば即返却、なければ同期フェッチ（初回のみ）
 jp_data, jp_volume = get_jp_data(all_jp_codes)
 
+# 立花証券リアルタイム株価（1回だけ取得、全タブで共有）
+_global_tachi_url = _load_tachibana_price_url()
+get_tachibana_prices(all_jp_codes, _global_tachi_url)
+
 
 # ── ダークモード・コンパクトモード状態 ─────────────────────────────────────────
 if "dark_mode" not in st.session_state:
@@ -1142,23 +1223,38 @@ elif _action == _dark_icon:
     st.rerun()
 elif _tachi_has_secrets and _action == _tachi_icon:
     del st.session_state["header_pills"]
-    uid = st.secrets["tachibana"]["user_id"]
-    pwd = st.secrets["tachibana"]["password"]
-    status, msg, price_url = _tachibana_login(uid, pwd)
-    if status == "ok" and price_url:
-        _tachi_st["price_url"] = price_url
-        _tachi_st["status"] = "connected"
-        fetch_tachibana_prices.clear()
-        st.rerun()
-    elif status == "need_auth":
-        _tachi_st["status"] = "need_auth"
-        st.toast("📞 電話認証後にもう一度押してください")
+    if not _can_attempt_login():
+        st.toast("⏳ ログイン試行の上限に達しました（5分後に再試行できます）")
     else:
-        _tachi_st["status"] = "disconnected"
-        st.toast(f"エラー: {msg}")
+        uid = st.secrets["tachibana"]["user_id"]
+        pwd = st.secrets["tachibana"]["password"]
+        _record_login_attempt()
+        status, msg, price_url = _tachibana_login(uid, pwd)
+        if status == "ok" and price_url:
+            _tachi_st["price_url"] = price_url
+            _tachi_st["status"] = "connected"
+            clear_tachibana_cache()
+            st.rerun()
+        elif status == "need_auth":
+            _tachi_st["status"] = "need_auth"
+            st.toast("📞 電話認証後にもう一度押してください")
+        else:
+            _tachi_st["status"] = "disconnected"
+            st.toast(f"エラー: {msg}")
 elif _action == "↺":
     del st.session_state["header_pills"]
     reload_jp_themes()
+    # 米国株データをバックグラウンドで再取得（ファイルキャッシュも削除）
+    _us["df"] = None
+    _us["date"] = ""
+    try:
+        _US_CACHE_FILE.unlink(missing_ok=True)
+    except Exception:
+        pass
+    if not _us["fetching"]:
+        threading.Thread(target=_us_bg_fetch, args=(all_us_tickers,), daemon=True).start()
+    # 立花証券キャッシュもクリア
+    clear_tachibana_cache()
     build_theme_list.clear()
     build_surge_list.clear()
     build_compact_list.clear()
@@ -1188,13 +1284,33 @@ def _periodic_check():
     if st.session_state.get("jp_ts_seen", 0) < _s["fresh_ts"]:
         st.session_state.jp_ts_seen = _s["fresh_ts"]
         st.rerun(scope="app")
+    # 米国株バックグラウンドフェッチ完了検知
+    _us_s = _us_state()
+    if not _us_s["fetching"] and st.session_state.get("_us_was_fetching"):
+        st.session_state._us_was_fetching = False
+        if _us_s["df"] is not None:
+            st.rerun(scope="app")
+    elif _us_s["fetching"]:
+        st.session_state._us_was_fetching = True
+    # 立花証券バックグラウンドフェッチ完了検知
+    _tf = _tachibana_fetch_state()
+    if st.session_state.get("_tachi_ts_seen", 0) < _tf["ts"]:
+        st.session_state._tachi_ts_seen = _tf["ts"]
+        st.rerun(scope="app")
+    # 立花証券セッション切れ → 自動再ログイン
+    _ts = _tachibana_state()
+    if _tachi_has_secrets and _ts["status"] == "expired":
+        _try_auto_reconnect()
+        if _ts["status"] == "connected":
+            clear_tachibana_cache()
+            st.rerun(scope="app")
     # リアルタイム株価の自動更新（取引時間中・Now選択時に5分ごと）
     if st.session_state.get("period_jp") == "Now" and is_trading_hours():
         now_ts = datetime.now().timestamp()
         last_rt = st.session_state.get("_last_rt_refresh", 0)
         if now_ts - last_rt > 300:
             st.session_state["_last_rt_refresh"] = now_ts
-            fetch_tachibana_prices.clear()
+            clear_tachibana_cache()
             st.rerun(scope="app")
 
 _periodic_check()
@@ -1210,16 +1326,7 @@ def _render_jp_tab():
             unsafe_allow_html=True,
         )
 
-    _tachibana_url = _load_tachibana_price_url()
-    _tachibana_prices = fetch_tachibana_prices(all_jp_codes, _tachibana_url)
-
-    # セッション切れ検出: connected なのにデータ取得失敗 → 自動再ログイン
-    if _tachibana_prices is None and _tachibana_url and _tachi_st["status"] == "connected":
-        _try_auto_reconnect()
-        _tachibana_url = _load_tachibana_price_url()
-        if _tachibana_url:
-            fetch_tachibana_prices.clear()
-            _tachibana_prices = fetch_tachibana_prices(all_jp_codes, _tachibana_url)
+    _tachibana_prices = _tachibana_fetch_state()["prices"]
 
     _col_period_jp, _col_order_jp = st.columns([5, 3])
     with _col_period_jp:
@@ -1264,6 +1371,8 @@ def _render_jp_tab():
     )
     if _use_tachi:
         _price_src = f"リアルタイム（立花証券 {datetime.now().strftime('%H:%M')} 更新）"
+    elif _is_rt and _tachibana_fetch_state()["fetching"]:
+        _price_src = "リアルタイム取得中..."
     elif _is_rt:
         _price_src = "J-Quants（前日終値・時間外）"
     else:
@@ -1273,6 +1382,19 @@ def _render_jp_tab():
 
 @st.fragment
 def _render_surge_tab():
+    if not st.session_state.get("_surge_loaded"):
+        st.markdown(
+            f'<div style="text-align:center;padding:60px 0;color:{THEME["text_sub"]}">'
+            '<p style="font-size:1.1rem;">🔥 急騰察知</p>'
+            '<p style="font-size:0.8rem;margin:8px 0 16px;">出来高急増テーマを検出します</p>'
+            '</div>',
+            unsafe_allow_html=True,
+        )
+        if st.button("データを表示", key="load_surge", use_container_width=True):
+            st.session_state._surge_loaded = True
+            st.rerun(scope="fragment")
+        return
+
     if jp_volume is None or (isinstance(jp_volume, pd.DataFrame) and jp_volume.empty):
         st.markdown(
             f'<p style="color:{THEME["text_sub"]};font-size:0.9rem;margin-top:20px;">'
@@ -1280,8 +1402,7 @@ def _render_surge_tab():
             unsafe_allow_html=True,
         )
     else:
-        _tachibana_url = _load_tachibana_price_url()
-        _tachibana_prices = fetch_tachibana_prices(all_jp_codes, _tachibana_url)
+        _tachibana_prices = _tachibana_fetch_state()["prices"]
         _tachi_for_surge = _tachibana_prices if (
             st.session_state.get("period_jp") == "Now"
             and is_trading_hours()
@@ -1299,6 +1420,19 @@ def _render_surge_tab():
 
 @st.fragment
 def _render_us_tab():
+    if not st.session_state.get("_us_loaded"):
+        st.markdown(
+            f'<div style="text-align:center;padding:60px 0;color:{THEME["text_sub"]}">'
+            '<p style="font-size:1.1rem;">🇺🇸 米国株</p>'
+            '<p style="font-size:0.8rem;margin:8px 0 16px;">米国株テーマランキングを表示します</p>'
+            '</div>',
+            unsafe_allow_html=True,
+        )
+        if st.button("データを表示", key="load_us", use_container_width=True):
+            st.session_state._us_loaded = True
+            st.rerun(scope="fragment")
+        return
+
     _us_s = _us_state()
     if _us_s["fetching"]:
         st.markdown(
