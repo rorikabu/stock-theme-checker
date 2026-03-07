@@ -1382,19 +1382,6 @@ def _render_jp_tab():
 
 @st.fragment
 def _render_surge_tab():
-    if not st.session_state.get("_surge_loaded"):
-        st.markdown(
-            f'<div style="text-align:center;padding:60px 0;color:{THEME["text_sub"]}">'
-            '<p style="font-size:1.1rem;">🔥 急騰察知</p>'
-            '<p style="font-size:0.8rem;margin:8px 0 16px;">出来高急増テーマを検出します</p>'
-            '</div>',
-            unsafe_allow_html=True,
-        )
-        if st.button("データを表示", key="load_surge", use_container_width=True):
-            st.session_state._surge_loaded = True
-            st.rerun(scope="fragment")
-        return
-
     if jp_volume is None or (isinstance(jp_volume, pd.DataFrame) and jp_volume.empty):
         st.markdown(
             f'<p style="color:{THEME["text_sub"]};font-size:0.9rem;margin-top:20px;">'
@@ -1420,19 +1407,6 @@ def _render_surge_tab():
 
 @st.fragment
 def _render_us_tab():
-    if not st.session_state.get("_us_loaded"):
-        st.markdown(
-            f'<div style="text-align:center;padding:60px 0;color:{THEME["text_sub"]}">'
-            '<p style="font-size:1.1rem;">🇺🇸 米国株</p>'
-            '<p style="font-size:0.8rem;margin:8px 0 16px;">米国株テーマランキングを表示します</p>'
-            '</div>',
-            unsafe_allow_html=True,
-        )
-        if st.button("データを表示", key="load_us", use_container_width=True):
-            st.session_state._us_loaded = True
-            st.rerun(scope="fragment")
-        return
-
     _us_s = _us_state()
     if _us_s["fetching"]:
         st.markdown(
