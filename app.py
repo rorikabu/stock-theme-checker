@@ -269,7 +269,6 @@ def _try_auto_reconnect():
     if status == "ok" and price_url:
         state["price_url"] = price_url
         state["status"] = "connected"
-        clear_tachibana_cache()
     elif status == "need_auth":
         state["status"] = "need_auth"
     else:
@@ -1305,16 +1304,30 @@ def _periodic_check():
     if _tachi_has_secrets and _ts["status"] == "expired":
         _try_auto_reconnect()
         if _ts["status"] == "connected":
-            clear_tachibana_cache()
-            st.rerun(scope="app")
+            # 古いデータを表示したまま、新URLでバックグラウンド再取得
+            _tf["ts"] = 0.0
+            _new_url = _load_tachibana_price_url()
+            if _new_url and not _tf["fetching"]:
+                threading.Thread(
+                    target=_tachibana_bg_fetch,
+                    args=(all_jp_codes, _new_url),
+                    daemon=True,
+                ).start()
     # リアルタイム株価の自動更新（取引時間中・Now選択時に5分ごと）
     if st.session_state.get("period_jp") == "Now" and is_trading_hours():
         now_ts = datetime.now().timestamp()
         last_rt = st.session_state.get("_last_rt_refresh", 0)
-        if now_ts - last_rt > 300:
+        if now_ts - last_rt > 300 and not _tf["fetching"]:
             st.session_state["_last_rt_refresh"] = now_ts
-            clear_tachibana_cache()
-            st.rerun(scope="app")
+            # 古いデータを表示したまま、バックグラウンドで最新を取得
+            _tf["ts"] = 0.0
+            _rt_url = _load_tachibana_price_url()
+            if _rt_url:
+                threading.Thread(
+                    target=_tachibana_bg_fetch,
+                    args=(all_jp_codes, _rt_url),
+                    daemon=True,
+                ).start()
 
 _periodic_check()
 
