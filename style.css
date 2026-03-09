@@ -273,7 +273,7 @@ h1 {
     box-shadow: 8px 8px 16px var(--shadow-dark), -8px -8px 16px var(--shadow-light);
 }
 
-.tl-left { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.tl-left { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; min-width: 0; overflow: hidden; }
 
 .tl-badge {
     width: 26px; height: 26px;
@@ -285,7 +285,7 @@ h1 {
     flex-shrink: 0;
     box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
 }
-.tl-name { font-size: 0.88rem; font-weight: 700; color: var(--text); white-space: nowrap; }
+.tl-name { font-size: 0.88rem; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .tl-tag {
     font-size: 0.58rem; font-weight: 600;
     padding: 2px 7px;
@@ -295,12 +295,19 @@ h1 {
     box-shadow: 2px 2px 4px var(--shadow-dark), -2px -2px 4px var(--shadow-light);
 }
 
-.tl-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.tl-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.tl-comp { font-size: 0.68rem; white-space: nowrap; opacity: 0.85; }
 .tl-ret {
     font-size: 0.95rem; font-weight: 800;
     letter-spacing: -0.02em;
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
+}
+@media (max-width: 480px) {
+    .tl-comp { font-size: 0.6rem; }
+    .tl-ret { font-size: 0.82rem; }
+    .tl-right { gap: 4px; }
+    .tl-row { padding: 8px 10px 8px 8px; }
 }
 .tl-chevron {
     font-size: 0.8rem; color: var(--text-muted);

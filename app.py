@@ -867,7 +867,7 @@ def build_theme_list(theme_data, prefix="tl"):
             acp_c = THEME["up"] if acp >= 0 else THEME["down"]
             aor_c = THEME["up"] if aor >= 0 else THEME["down"]
             comp_html = (
-                f'<span style="font-size:0.72rem;margin-left:6px;">'
+                f'<span class="tl-comp">'
                 f'<span style="color:{acp_c}">前{acp:+.1f}%</span>'
                 f'<span style="color:{THEME["muted"]};margin:0 2px;">|</span>'
                 f'<span style="color:{aor_c}">寄{aor:+.1f}%</span>'
@@ -934,8 +934,8 @@ def build_theme_list(theme_data, prefix="tl"):
             f'      <span class="tl-tag" style="{tag_style}">{t["category"]}</span>'
             f'    </div>'
             f'    <div class="tl-right">'
-            f'      <span class="tl-ret" style="color:{r_color}">{arrow} {sign}{avg:.2f}{unit}</span>'
             f'{comp_html}'
+            f'      <span class="tl-ret" style="color:{r_color}">{arrow} {sign}{avg:.2f}{unit}</span>'
             f'      <span class="tl-chevron">&#9660;</span>'
             f'    </div>'
             f'  </label>'
