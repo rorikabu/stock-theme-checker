@@ -743,11 +743,12 @@ def fmt_change(v):
     return f"{sign}{int(v):,}" if v == int(v) else f"{sign}{v:,.1f}"
 
 
-def compute_theme_data(themes, data, days, tachibana=None, use_mixed=False):
+def compute_theme_data(themes, data, days, tachibana=None, use_mixed=False, opening_prices=None):
     """
     tachibana: {code: {price, prev, change_amt, change_pct, open_price}} or None
     - tachibana が渡された場合: 騰落率に pDYWP を使用（呼び出し側が制御）
     - use_mixed=True: 前日比×0.5 + 寄り比×0.5 のミックス指標を使用
+    - opening_prices: 始値辞書（外から渡す。省略時は _opening_prices_state から取得）
     - tachibana が None: J-Quants 履歴データのみ使用
     - 現在価格表示: Tachibana > J-Quants フォールバック
     """
@@ -758,7 +759,7 @@ def compute_theme_data(themes, data, days, tachibana=None, use_mixed=False):
         change_pcts = {}  # 前日比%（ミックス時のみ）
         open_rets = {}    # 寄り比%（ミックス時のみ）
         weights = theme.get("weights", {})
-        _op_prices = _opening_prices_state()["prices"] if use_mixed else {}
+        _op_prices = (opening_prices if opening_prices is not None else _opening_prices_state()["prices"]) if use_mixed else {}
         for t in theme["tickers"]:
             # 立花データの有効性チェック: 価格0以下 or 始値と50%超乖離 → J-Quantsフォールバック
             _tachi_ok = (tachibana and t in tachibana and tachibana[t]["price"] > 0)
@@ -822,19 +823,23 @@ def compute_theme_data(themes, data, days, tachibana=None, use_mixed=False):
                 elif len(s) == 1:
                     prices[t] = {"price": float(s.iloc[-1]), "change": 0.0}
         item = {**theme, "avg": avg, "returns": rets, "prices": prices}
-        # ミックス時: 内訳データを追加
-        if use_mixed and change_pcts:
-            _wm = weights
-            if _wm:
-                _ws = sum(_WEIGHT_MULTIPLIER.get(_wm.get(t, 2), 1.0) for t in change_pcts)
-                _cp_avg = sum(change_pcts[t] * _WEIGHT_MULTIPLIER.get(_wm.get(t, 2), 1.0) for t in change_pcts) / _ws if _ws else 0.0
-                _op_avg = sum(open_rets[t] * _WEIGHT_MULTIPLIER.get(_wm.get(t, 2), 1.0) for t in open_rets) / _ws if _ws else 0.0
+        # ミックス時: 内訳データを追加（change_pcts が空でもキーは必ず含める）
+        if use_mixed:
+            if change_pcts:
+                _wm = weights
+                if _wm:
+                    _ws = sum(_WEIGHT_MULTIPLIER.get(_wm.get(t, 2), 1.0) for t in change_pcts)
+                    _cp_avg = sum(change_pcts[t] * _WEIGHT_MULTIPLIER.get(_wm.get(t, 2), 1.0) for t in change_pcts) / _ws if _ws else 0.0
+                    _op_avg = sum(open_rets[t] * _WEIGHT_MULTIPLIER.get(_wm.get(t, 2), 1.0) for t in open_rets) / _ws if _ws else 0.0
+                else:
+                    _cp_avg = sum(change_pcts.values()) / len(change_pcts)
+                    _op_avg = sum(open_rets.values()) / len(open_rets)
+                _nc = len(change_pcts)
+                item["avg_change_pct"] = round((_nc * _cp_avg) / (_nc + _SHRINKAGE_M), 2) if _nc else 0.0
+                item["avg_open_ret"] = round((_nc * _op_avg) / (_nc + _SHRINKAGE_M), 2) if _nc else 0.0
             else:
-                _cp_avg = sum(change_pcts.values()) / len(change_pcts)
-                _op_avg = sum(open_rets.values()) / len(open_rets)
-            _nc = len(change_pcts)
-            item["avg_change_pct"] = round((_nc * _cp_avg) / (_nc + _SHRINKAGE_M), 2) if _nc else 0.0
-            item["avg_open_ret"] = round((_nc * _op_avg) / (_nc + _SHRINKAGE_M), 2) if _nc else 0.0
+                item["avg_change_pct"] = 0.0
+                item["avg_open_ret"] = 0.0
             item["change_pcts"] = change_pcts
             item["open_rets"] = open_rets
         result.append(item)
@@ -1014,6 +1019,21 @@ def build_compact_list(theme_data, prefix="cp"):
                     f'</div>'
                 )
 
+            # ミックス時: テーマ行に前日比・寄り比の内訳を表示
+            comp_html = ""
+            if is_mixed:
+                acp = t.get("avg_change_pct", 0.0)
+                aor = t.get("avg_open_ret", 0.0)
+                acp_c = THEME["up"] if acp >= 0 else THEME["down"]
+                aor_c = THEME["up"] if aor >= 0 else THEME["down"]
+                comp_html = (
+                    f'<span class="cp-comp">'
+                    f'<span style="color:{acp_c}">前{acp:+.1f}%</span>'
+                    f'<span style="color:{THEME["muted"]};margin:0 1px;">|</span>'
+                    f'<span style="color:{aor_c}">寄{aor:+.1f}%</span>'
+                    f'</span>'
+                )
+
             uid = f"{prefix}{rank}"
             html += (
                 f'<div>'
@@ -1021,6 +1041,7 @@ def build_compact_list(theme_data, prefix="cp"):
                 f'<label for="{uid}" class="cp-row">'
                 f'<span class="cp-rank">{rank}</span>'
                 f'<span class="cp-name">{t["name"]}</span>'
+                f'{comp_html}'
                 f'<span class="cp-ret" style="color:{r_color}">{arrow}{sign}{avg:.2f}{unit}</span>'
                 f'<span class="cp-chevron">&#9660;</span>'
                 f'</label>'
@@ -1191,11 +1212,11 @@ _OPENING_PRICES_FILE = Path(".streamlit/opening_prices.json")
 @st.cache_resource
 def _opening_prices_state():
     """銘柄ごとの寄り付き価格"""
-    return {"prices": {}, "_date": "", "_file_loaded": False}
+    return {"prices": {}, "_date": "", "_file_loaded": False, "_file_prices": {}}
 
 
 def _load_opening_prices():
-    """opening_prices.json から当日の始値を読み込む（GitHub Actions で毎朝9:10に更新）"""
+    """opening_prices.json から始値を読み込む（GitHub Actions で毎朝9:10に更新）"""
     state = _opening_prices_state()
     today = datetime.now(_JST).strftime("%Y-%m-%d")
     if state["_date"] == today and state["_file_loaded"]:
@@ -1208,8 +1229,10 @@ def _load_opening_prices():
     try:
         with open(_OPENING_PRICES_FILE, encoding="utf-8") as f:
             data = json.load(f)
+        file_prices = {k: float(v) for k, v in data["prices"].items()}
+        state["_file_prices"] = file_prices  # 日付に関係なく常に保持（1D用）
         if data.get("date") == today:
-            state["prices"] = {k: float(v) for k, v in data["prices"].items()}
+            state["prices"] = file_prices
             state["_file_loaded"] = True
     except Exception:
         pass
@@ -1847,9 +1870,19 @@ def _render_jp_tab():
     _use_tachi  = (period_jp in ("Now", "1D")) and _trading and bool(_tachibana_prices)
     days_jp     = 2 if _is_rt else JP_PERIODS[period_jp]
     _tachi_for_compute = _tachibana_prices if _use_tachi else None
-    # ミックス指標: 立花接続時 or 始値ファイルあり（Now/1Dのみ）
-    _has_opening = bool(_opening_prices_state()["prices"])
-    _use_mixed  = (period_jp in ("Now", "1D")) and (_use_tachi or _has_opening)
+    # ミックス指標: Now=ざら場中のみ, 1D=前営業日の始値ファイルでもOK
+    _op_state = _opening_prices_state()
+    _has_opening = bool(_op_state["prices"])
+    _has_file   = bool(_op_state["_file_prices"])
+    if period_jp == "Now":
+        _use_mixed = _use_tachi or _has_opening
+        _op_for_compute = _op_state["prices"] if _has_opening else None
+    elif period_jp == "1D":
+        _use_mixed = _use_tachi or _has_opening or _has_file
+        _op_for_compute = _op_state["prices"] if _has_opening else (_op_state["_file_prices"] if _has_file else None)
+    else:
+        _use_mixed = False
+        _op_for_compute = None
 
     if jp_data.empty and not _tachi_for_compute:
         st.markdown(
@@ -1862,6 +1895,7 @@ def _render_jp_tab():
             JP_THEMES, jp_data, days_jp,
             tachibana=_tachi_for_compute,
             use_mixed=_use_mixed,
+            opening_prices=_op_for_compute,
         )
         if order_jp == "▼ ワースト":
             jp_theme_data = list(reversed(jp_theme_data))

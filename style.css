@@ -308,6 +308,7 @@ h1 {
     .tl-ret { font-size: 0.82rem; }
     .tl-right { gap: 4px; }
     .tl-row { padding: 8px 10px 8px 8px; }
+    .cp-comp { font-size: 0.54rem; margin-right: 2px; }
 }
 .tl-chevron {
     font-size: 0.8rem; color: var(--text-muted);
@@ -416,6 +417,13 @@ h1 {
     overflow: hidden;
     text-overflow: ellipsis;
     margin-right: 6px;
+}
+.cp-comp {
+    font-size: 0.6rem;
+    white-space: nowrap;
+    opacity: 0.85;
+    flex-shrink: 0;
+    margin-right: 4px;
 }
 .cp-ret {
     font-size: 0.76rem;
