@@ -1184,17 +1184,15 @@ def _load_opening_prices():
 
 
 def _record_opening_prices(tachibana_prices):
-    """opening_prices.json がない場合のフォールバック: 最初の取得価格を記録"""
+    """ファイルにない銘柄を立花証券の初回取得値で個別補完"""
     state = _opening_prices_state()
-    if state["prices"]:
-        return  # ファイルまたは既に記録済み
     today = datetime.now(_JST).strftime("%Y-%m-%d")
     if state["_date"] != today:
         state["prices"] = {}
         state["_date"] = today
         state["_file_loaded"] = False
     for code, data in tachibana_prices.items():
-        if data.get("price", 0) > 0:
+        if code not in state["prices"] and data.get("price", 0) > 0:
             state["prices"][code] = data["price"]
 
 
