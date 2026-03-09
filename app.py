@@ -166,7 +166,7 @@ def is_trading_hours() -> bool:
 
 # ── Tachibana API 定数 ────────────────────────────────────────────────────────
 _TACHIBANA_SECRETS = Path(".streamlit/secrets.toml")
-_TACHIBANA_COLUMNS = "pDPP,pPRP,pDYRP,pDYWP,pDOP"  # 現値,前日終値,前日比額,前日比%,始値
+_TACHIBANA_COLUMNS = "pDPP,pPRP,pDYRP,pDYWP"  # 現値,前日終値,前日比額,前日比%
 _TACHIBANA_AUTH_URL = "https://kabuka.e-shiten.jp/e_api_v4r8/auth/"
 _JST = timezone(timedelta(hours=9))
 _tachibana_p_no_login = 900
@@ -644,7 +644,6 @@ def _fetch_tachibana_batch(batch: tuple, price_url: str, p_no: int, _retry: bool
                 "prev":       float(item.get("181", 0)),
                 "change_amt": float(item.get("120", 0)),
                 "change_pct": float(item.get("119", 0)),
-                "open_price": float(item.get("132", 0)),
             }
         except (ValueError, TypeError):
             pass
@@ -759,12 +758,14 @@ def compute_theme_data(themes, data, days, tachibana=None, use_mixed=False):
         change_pcts = {}  # 前日比%（ミックス時のみ）
         open_rets = {}    # 寄り比%（ミックス時のみ）
         weights = theme.get("weights", {})
+        _op_prices = _opening_prices_state()["prices"] if use_mixed else {}
         for t in theme["tickers"]:
             if tachibana and t in tachibana:
                 td = tachibana[t]
-                if use_mixed and td.get("open_price", 0) > 0:
+                op_price = _op_prices.get(t, 0)
+                if use_mixed and op_price > 0:
                     cp = td["change_pct"]
-                    op = round((td["price"] - td["open_price"]) / td["open_price"] * 100, 2)
+                    op = round((td["price"] - op_price) / op_price * 100, 2)
                     rets[t] = round(cp * 0.5 + op * 0.5, 2)
                     change_pcts[t] = cp
                     open_rets[t] = op
@@ -1150,6 +1151,26 @@ def build_surge_list(surge_data, prefix="sg"):
 
 
 # ── 急変動（モメンタム）検出 ─────────────────────────────────────────────────
+
+
+@st.cache_resource
+def _opening_prices_state():
+    """銘柄ごとの寄り付き価格（当日最初の取得値を記録）"""
+    return {"prices": {}, "_date": ""}
+
+
+def _record_opening_prices(tachibana_prices):
+    """当日の最初の立花証券価格を寄り付き価格として記録"""
+    state = _opening_prices_state()
+    today = datetime.now(_JST).strftime("%Y-%m-%d")
+    if state["_date"] != today:
+        state["prices"] = {}
+        state["_date"] = today
+    if state["prices"]:
+        return  # 既に記録済み
+    for code, data in tachibana_prices.items():
+        if data.get("price", 0) > 0:
+            state["prices"][code] = data["price"]
 
 
 @st.cache_resource
@@ -1664,10 +1685,11 @@ elif st.session_state.jp_ts_seen < _state["fresh_ts"]:
 @st.fragment(run_every=10)
 def _periodic_check():
     _s = _jp_state()
-    # モメンタムスナップショット記録（取引時間中のみ）
+    # 寄り付き価格記録 + モメンタムスナップショット記録（取引時間中のみ）
     if is_trading_hours():
         _mm_prices = _tachibana_fetch_state()["prices"]
         if _mm_prices:
+            _record_opening_prices(_mm_prices)
             record_momentum_snapshot(JP_THEMES, _mm_prices)
     # J-Quantsバックグラウンドフェッチ完了検知
     if st.session_state.get("jp_ts_seen", 0) < _s["fresh_ts"]:
