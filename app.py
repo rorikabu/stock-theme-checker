@@ -772,7 +772,20 @@ def compute_theme_data(themes, data, days, tachibana=None, use_mixed=False):
                 else:
                     rets[t] = td["change_pct"]
             elif t in valid:
-                rets[t] = calc_return(data[t], days)
+                cp = calc_return(data[t], days)
+                op_price = _op_prices.get(t, 0)
+                if use_mixed and op_price > 0:
+                    s = data[t].dropna()
+                    if len(s) >= 1:
+                        current = float(s.iloc[-1])
+                        op = round((current - op_price) / op_price * 100, 2)
+                        rets[t] = round(cp * 0.5 + op * 0.5, 2)
+                        change_pcts[t] = cp
+                        open_rets[t] = op
+                    else:
+                        rets[t] = cp
+                else:
+                    rets[t] = cp
         if rets and weights:
             w_sum = sum(_WEIGHT_MULTIPLIER.get(weights.get(t, 2), 1.0) for t in rets)
             w_total = sum(rets[t] * _WEIGHT_MULTIPLIER.get(weights.get(t, 2), 1.0) for t in rets)
@@ -1810,7 +1823,9 @@ def _render_jp_tab():
     _use_tachi  = (period_jp in ("Now", "1D")) and _trading and bool(_tachibana_prices)
     days_jp     = 2 if _is_rt else JP_PERIODS[period_jp]
     _tachi_for_compute = _tachibana_prices if _use_tachi else None
-    _use_mixed  = _use_tachi  # Now/1D + リアルタイム接続時にミックス指標
+    # ミックス指標: 立花接続時 or 始値ファイルあり（Now/1Dのみ）
+    _has_opening = bool(_opening_prices_state()["prices"])
+    _use_mixed  = (period_jp in ("Now", "1D")) and (_use_tachi or _has_opening)
 
     if jp_data.empty and not _tachi_for_compute:
         st.markdown(
@@ -1836,8 +1851,10 @@ def _render_jp_tab():
         datetime.fromtimestamp(_state["fresh_ts"]).strftime("%Y-%m-%d %H:%M")
         if _state["fresh_ts"] > 0 else "取得中..."
     )
-    if _use_mixed:
+    if _use_mixed and _use_tachi:
         _price_src = f"ミックス指標：前日比×寄り比（立花証券 {datetime.now(_JST).strftime('%H:%M')}）"
+    elif _use_mixed:
+        _price_src = "ミックス指標：前日比×寄り比（J-Quants + 始値データ）"
     elif _use_tachi:
         _price_src = f"リアルタイム（立花証券 {datetime.now(_JST).strftime('%H:%M')} 更新）"
     elif _is_rt and _tachibana_fetch_state()["fetching"]:
