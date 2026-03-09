@@ -768,9 +768,12 @@ def compute_theme_data(themes, data, days, tachibana=None, use_mixed=False):
                 if use_mixed and op_price > 0:
                     cp = td["change_pct"]
                     op = round((td["price"] - op_price) / op_price * 100, 2)
-                    rets[t] = round(cp * 0.5 + op * 0.5, 2)
-                    change_pcts[t] = cp
-                    open_rets[t] = op
+                    if abs(op) > 50:  # 始値と現値の乖離が大きすぎる → 分割調整ズレ等
+                        rets[t] = cp
+                    else:
+                        rets[t] = round(cp * 0.5 + op * 0.5, 2)
+                        change_pcts[t] = cp
+                        open_rets[t] = op
                 else:
                     rets[t] = td["change_pct"]
             elif t in valid:
@@ -781,9 +784,12 @@ def compute_theme_data(themes, data, days, tachibana=None, use_mixed=False):
                     if len(s) >= 1:
                         current = float(s.iloc[-1])
                         op = round((current - op_price) / op_price * 100, 2)
-                        rets[t] = round(cp * 0.5 + op * 0.5, 2)
-                        change_pcts[t] = cp
-                        open_rets[t] = op
+                        if abs(op) > 50:  # 始値と現値の乖離が大きすぎる
+                            rets[t] = cp
+                        else:
+                            rets[t] = round(cp * 0.5 + op * 0.5, 2)
+                            change_pcts[t] = cp
+                            open_rets[t] = op
                     else:
                         rets[t] = cp
                 else:
@@ -1174,7 +1180,7 @@ _OPENING_PRICES_FILE = Path(".streamlit/opening_prices.json")
 @st.cache_resource
 def _opening_prices_state():
     """銘柄ごとの寄り付き価格"""
-    return {"prices": {}, "_date": "", "_file_loaded": False}
+    return {"prices": {}, "_tachi_codes": set(), "_date": "", "_file_loaded": False}
 
 
 def _load_opening_prices():
@@ -1186,6 +1192,7 @@ def _load_opening_prices():
     # 日付変更時はリセット
     if state["_date"] != today:
         state["prices"] = {}
+        state["_tachi_codes"] = set()
         state["_date"] = today
         state["_file_loaded"] = False
     try:
@@ -1199,16 +1206,21 @@ def _load_opening_prices():
 
 
 def _record_opening_prices(tachibana_prices):
-    """ファイルにない銘柄を立花証券の初回取得値で個別補完"""
+    """立花証券の初回取得値を始値として記録（yfinance値を上書き）。
+    立花とyfinanceで分割調整が異なる銘柄があるため、
+    実際の取引に使うデータソース（立花）の初回値を優先する。
+    """
     state = _opening_prices_state()
     today = datetime.now(_JST).strftime("%Y-%m-%d")
     if state["_date"] != today:
         state["prices"] = {}
+        state["_tachi_codes"] = set()
         state["_date"] = today
         state["_file_loaded"] = False
     for code, data in tachibana_prices.items():
-        if code not in state["prices"] and data.get("price", 0) > 0:
-            state["prices"][code] = data["price"]
+        if code not in state["_tachi_codes"] and data.get("price", 0) > 0:
+            state["prices"][code] = data["price"]  # yfinance値も上書き
+            state["_tachi_codes"].add(code)
 
 
 @st.cache_resource
