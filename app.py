@@ -1386,7 +1386,7 @@ def _render_jp_tab():
         if _state["fresh_ts"] > 0 else "取得中..."
     )
     if _use_tachi:
-        _price_src = f"リアルタイム（立花証券 {datetime.now().strftime('%H:%M')} 更新）"
+        _price_src = f"リアルタイム（立花証券 {datetime.now(_JST).strftime('%H:%M')} 更新）"
     elif _is_rt and _tachibana_fetch_state()["fetching"]:
         _price_src = "リアルタイム取得中..."
     elif _is_rt:
