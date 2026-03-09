@@ -760,20 +760,20 @@ def compute_theme_data(themes, data, days, tachibana=None, use_mixed=False):
         weights = theme.get("weights", {})
         _op_prices = _opening_prices_state()["prices"] if use_mixed else {}
         for t in theme["tickers"]:
-            if tachibana and t in tachibana:
+            # 立花データの有効性チェック: 価格0以下 or 始値と50%超乖離 → J-Quantsフォールバック
+            _tachi_ok = (tachibana and t in tachibana and tachibana[t]["price"] > 0)
+            if _tachi_ok and _op_prices.get(t, 0) > 0:
+                if abs(tachibana[t]["price"] - _op_prices[t]) / _op_prices[t] > 0.5:
+                    _tachi_ok = False  # 立花APIの価格異常（例: 9434ソフトバンク）
+            if _tachi_ok:
                 td = tachibana[t]
-                if td["price"] <= 0:
-                    continue  # 未約定・データ欠損 → スキップ
                 op_price = _op_prices.get(t, 0)
                 if use_mixed and op_price > 0:
                     cp = td["change_pct"]
                     op = round((td["price"] - op_price) / op_price * 100, 2)
-                    if abs(op) > 50:  # 始値と現値の乖離が大きすぎる → 分割調整ズレ等
-                        rets[t] = cp
-                    else:
-                        rets[t] = round(cp * 0.5 + op * 0.5, 2)
-                        change_pcts[t] = cp
-                        open_rets[t] = op
+                    rets[t] = round(cp * 0.5 + op * 0.5, 2)
+                    change_pcts[t] = cp
+                    open_rets[t] = op
                 else:
                     rets[t] = td["change_pct"]
             elif t in valid:
@@ -807,7 +807,12 @@ def compute_theme_data(themes, data, days, tachibana=None, use_mixed=False):
         avg = round((n * raw_avg) / (n + _SHRINKAGE_M), 2) if n > 0 else 0.0
         prices = {}
         for t in theme["tickers"]:
-            if tachibana and t in tachibana:
+            # 立花データの有効性チェック（上のループと同じ条件）
+            _tp_ok = (tachibana and t in tachibana and tachibana[t]["price"] > 0)
+            if _tp_ok and _op_prices.get(t, 0) > 0:
+                if abs(tachibana[t]["price"] - _op_prices[t]) / _op_prices[t] > 0.5:
+                    _tp_ok = False
+            if _tp_ok:
                 td = tachibana[t]
                 prices[t] = {"price": td["price"], "change": td["change_amt"]}
             elif t in valid:
@@ -1056,13 +1061,19 @@ def compute_surge_data(themes, volume_df, price_df, tachibana=None):
                     surges[t] = round(latest_vol / avg_vol, 2) if avg_vol > 0 else 0.0
                 else:
                     surges[t] = 0.0
+            # 立花データの有効性チェック: J-Quants最終値と50%超乖離 → フォールバック
+            _t_ok = (tachibana and t in tachibana and tachibana[t]["price"] > 0)
+            if _t_ok and t in price_df.columns:
+                _last = price_df[t].dropna()
+                if len(_last) >= 1 and abs(tachibana[t]["price"] - float(_last.iloc[-1])) / float(_last.iloc[-1]) > 0.5:
+                    _t_ok = False
             # 騰落率
-            if tachibana and t in tachibana and tachibana[t]["price"] > 0:
+            if _t_ok:
                 rets[t] = tachibana[t]["change_pct"]
             elif t in price_df.columns:
                 rets[t] = calc_return(price_df[t], 2)
             # 現在価格
-            if tachibana and t in tachibana and tachibana[t]["price"] > 0:
+            if _t_ok:
                 td = tachibana[t]
                 prices[t] = {"price": td["price"], "change": td["change_amt"]}
             elif t in price_df.columns:
@@ -1180,7 +1191,7 @@ _OPENING_PRICES_FILE = Path(".streamlit/opening_prices.json")
 @st.cache_resource
 def _opening_prices_state():
     """銘柄ごとの寄り付き価格"""
-    return {"prices": {}, "_tachi_codes": set(), "_date": "", "_file_loaded": False}
+    return {"prices": {}, "_date": "", "_file_loaded": False}
 
 
 def _load_opening_prices():
@@ -1192,7 +1203,6 @@ def _load_opening_prices():
     # 日付変更時はリセット
     if state["_date"] != today:
         state["prices"] = {}
-        state["_tachi_codes"] = set()
         state["_date"] = today
         state["_file_loaded"] = False
     try:
@@ -1206,21 +1216,16 @@ def _load_opening_prices():
 
 
 def _record_opening_prices(tachibana_prices):
-    """立花証券の初回取得値を始値として記録（yfinance値を上書き）。
-    立花とyfinanceで分割調整が異なる銘柄があるため、
-    実際の取引に使うデータソース（立花）の初回値を優先する。
-    """
+    """ファイルにない銘柄を立花証券の初回取得値で個別補完"""
     state = _opening_prices_state()
     today = datetime.now(_JST).strftime("%Y-%m-%d")
     if state["_date"] != today:
         state["prices"] = {}
-        state["_tachi_codes"] = set()
         state["_date"] = today
         state["_file_loaded"] = False
     for code, data in tachibana_prices.items():
-        if code not in state["_tachi_codes"] and data.get("price", 0) > 0:
-            state["prices"][code] = data["price"]  # yfinance値も上書き
-            state["_tachi_codes"].add(code)
+        if code not in state["prices"] and data.get("price", 0) > 0:
+            state["prices"][code] = data["price"]
 
 
 @st.cache_resource
@@ -1231,12 +1236,17 @@ def _momentum_state():
 
 def _compute_theme_scores(themes, tachibana_prices):
     """テーマごとの加重平均スコア（shrinkage補正済み）を {name: float} で返す"""
+    _op = _opening_prices_state()["prices"]
     scores = {}
     for theme in themes:
         rets = {}
         weights = theme.get("weights", {})
         for t in theme["tickers"]:
-            if tachibana_prices and t in tachibana_prices and tachibana_prices[t]["price"] > 0:
+            _tok = (tachibana_prices and t in tachibana_prices and tachibana_prices[t]["price"] > 0)
+            if _tok and _op.get(t, 0) > 0:
+                if abs(tachibana_prices[t]["price"] - _op[t]) / _op[t] > 0.5:
+                    _tok = False
+            if _tok:
                 rets[t] = tachibana_prices[t]["change_pct"]
         if rets and weights:
             w_sum = sum(_WEIGHT_MULTIPLIER.get(weights.get(t, 2), 1.0) for t in rets)
