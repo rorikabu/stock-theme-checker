@@ -1099,6 +1099,17 @@ else:
 # JP: ファイルキャッシュがあれば即返却、なければ同期フェッチ（初回のみ）
 jp_data, jp_volume = get_jp_data(all_jp_codes)
 
+# 立花証券: 認証情報があれば自動接続（リブート後も自動で繋がる）
+_tachi_has_secrets = False
+try:
+    _ = st.secrets["tachibana"]["user_id"]
+    _tachi_has_secrets = True
+except Exception:
+    pass
+_tachi_st = _tachibana_state()
+if _tachi_has_secrets and _tachi_st["status"] in ("expired", "disconnected"):
+    _try_auto_reconnect()
+
 # 立花証券リアルタイム株価（1回だけ取得、全タブで共有）
 _global_tachi_url = _load_tachibana_price_url()
 get_tachibana_prices(all_jp_codes, _global_tachi_url)
@@ -1168,16 +1179,8 @@ def _load_logo_b64():
 
 _logo_b64 = _load_logo_b64()
 
-# ── 立花証券の状態チェック（ヘッダー描画前） ──────────────────────────────────
-_tachi_has_secrets = False
-try:
-    _ = st.secrets["tachibana"]["user_id"]
-    _tachi_has_secrets = True
-except Exception:
-    pass
+# ── 立花証券の接続状態（ヘッダー表示用） ──────────────────────────────────
 _tachi_st = _tachibana_state()
-if _tachi_has_secrets and _tachi_st["status"] == "expired":
-    _try_auto_reconnect()
 
 # ── ヘッダー（HTML横並び + Streamlitウィジェット） ────────────────────────────
 # ロゴ + 接続状態を1行で表示
