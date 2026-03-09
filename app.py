@@ -1323,8 +1323,8 @@ def _periodic_check():
             st.rerun(scope="app")
     elif _tf["fetching"]:
         st.session_state._tachi_was_fetching = True
-    # セッション切れ（取得中でない場合のみ） → 再接続して再取得
-    elif _tachi_has_secrets and _ts["status"] == "expired":
+    # セッション切れ or 未接続（取得中でない場合のみ） → 再接続して再取得
+    elif _tachi_has_secrets and _ts["status"] in ("expired", "disconnected"):
         _try_auto_reconnect()
         if _ts["status"] == "connected":
             _tf["ts"] = 0.0
