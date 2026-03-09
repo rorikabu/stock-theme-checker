@@ -181,7 +181,7 @@ def _tachibana_state():
 @st.cache_resource
 def _tachibana_fetch_state():
     """立花証券のリアルタイム株価キャッシュ（バックグラウンド取得用）"""
-    return {"prices": None, "fetching": False, "ts": 0.0}
+    return {"prices": None, "fetching": False, "ts": 0.0, "fetch_start": 0.0}
 
 
 @st.cache_resource
@@ -677,6 +677,7 @@ def _tachibana_bg_fetch(codes, price_url):
     if state["fetching"]:
         return
     state["fetching"] = True
+    state["fetch_start"] = datetime.now().timestamp()
     try:
         prices = _do_fetch_tachibana_prices(codes, price_url)
         if prices is not None:
@@ -684,6 +685,7 @@ def _tachibana_bg_fetch(codes, price_url):
             state["ts"] = datetime.now().timestamp()
     finally:
         state["fetching"] = False
+        state["fetch_start"] = 0.0
 
 
 def get_tachibana_prices(codes, price_url):
@@ -1294,25 +1296,41 @@ def _periodic_check():
             st.rerun(scope="app")
     elif _us_s["fetching"]:
         st.session_state._us_was_fetching = True
-    # 立花証券バックグラウンドフェッチ完了検知
+    # ── 立花証券バックグラウンドフェッチ管理 ──────────────────────────
     _tf = _tachibana_fetch_state()
+    _ts = _tachibana_state()
+    # タイムアウト: 60秒以上取得中 → 強制リセット（スレッド詰まり対策）
+    if _tf["fetching"] and _tf.get("fetch_start", 0) > 0:
+        if datetime.now().timestamp() - _tf["fetch_start"] > 60:
+            _tf["fetching"] = False
+            _tf["fetch_start"] = 0.0
+    # 成功検知: tsが更新された → 画面更新
     if st.session_state.get("_tachi_ts_seen", 0) < _tf["ts"]:
         st.session_state._tachi_ts_seen = _tf["ts"]
         st.rerun(scope="app")
-    # 立花証券セッション切れ → 自動再ログイン
-    _ts = _tachibana_state()
-    if _tachi_has_secrets and _ts["status"] == "expired":
+    # 失敗検知: fetchingがTrue→Falseになったがtsは未更新
+    if not _tf["fetching"] and st.session_state.get("_tachi_was_fetching"):
+        st.session_state._tachi_was_fetching = False
+        if _tachi_has_secrets and _ts["status"] == "expired":
+            _try_auto_reconnect()
+            if _ts["status"] == "connected":
+                _new_url = _load_tachibana_price_url()
+                if _new_url:
+                    threading.Thread(target=_tachibana_bg_fetch, args=(all_jp_codes, _new_url), daemon=True).start()
+            else:
+                st.rerun(scope="app")
+        else:
+            st.rerun(scope="app")
+    elif _tf["fetching"]:
+        st.session_state._tachi_was_fetching = True
+    # セッション切れ（取得中でない場合のみ） → 再接続して再取得
+    elif _tachi_has_secrets and _ts["status"] == "expired":
         _try_auto_reconnect()
         if _ts["status"] == "connected":
-            # 古いデータを表示したまま、新URLでバックグラウンド再取得
             _tf["ts"] = 0.0
             _new_url = _load_tachibana_price_url()
-            if _new_url and not _tf["fetching"]:
-                threading.Thread(
-                    target=_tachibana_bg_fetch,
-                    args=(all_jp_codes, _new_url),
-                    daemon=True,
-                ).start()
+            if _new_url:
+                threading.Thread(target=_tachibana_bg_fetch, args=(all_jp_codes, _new_url), daemon=True).start()
     # リアルタイム株価の自動更新（取引時間中・Now選択時に5分ごと）
     if st.session_state.get("period_jp") == "Now" and is_trading_hours():
         now_ts = datetime.now().timestamp()
