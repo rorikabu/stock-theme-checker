@@ -166,7 +166,7 @@ def is_trading_hours() -> bool:
 
 # ── Tachibana API 定数 ────────────────────────────────────────────────────────
 _TACHIBANA_SECRETS = Path(".streamlit/secrets.toml")
-_TACHIBANA_COLUMNS = "pDPP,pPRP,pDYRP,pDYWP"  # 現値,前日終値,前日比額,前日比%
+_TACHIBANA_COLUMNS = "pDPP,pPRP,pDYRP,pDYWP,pDOP"  # 現値,前日終値,前日比額,前日比%,始値
 _TACHIBANA_AUTH_URL = "https://kabuka.e-shiten.jp/e_api_v4r8/auth/"
 _JST = timezone(timedelta(hours=9))
 _tachibana_p_no_login = 900
@@ -644,6 +644,7 @@ def _fetch_tachibana_batch(batch: tuple, price_url: str, p_no: int, _retry: bool
                 "prev":       float(item.get("181", 0)),
                 "change_amt": float(item.get("120", 0)),
                 "change_pct": float(item.get("119", 0)),
+                "open_price": float(item.get("132", 0)),
             }
         except (ValueError, TypeError):
             pass
@@ -743,10 +744,11 @@ def fmt_change(v):
     return f"{sign}{int(v):,}" if v == int(v) else f"{sign}{v:,.1f}"
 
 
-def compute_theme_data(themes, data, days, tachibana=None):
+def compute_theme_data(themes, data, days, tachibana=None, use_mixed=False):
     """
-    tachibana: {code: {price, prev, change_amt, change_pct}} or None
+    tachibana: {code: {price, prev, change_amt, change_pct, open_price}} or None
     - tachibana が渡された場合: 騰落率に pDYWP を使用（呼び出し側が制御）
+    - use_mixed=True: 前日比×0.5 + 寄り比×0.5 のミックス指標を使用
     - tachibana が None: J-Quants 履歴データのみ使用
     - 現在価格表示: Tachibana > J-Quants フォールバック
     """
@@ -757,7 +759,12 @@ def compute_theme_data(themes, data, days, tachibana=None):
         weights = theme.get("weights", {})
         for t in theme["tickers"]:
             if tachibana and t in tachibana:
-                rets[t] = tachibana[t]["change_pct"]
+                td = tachibana[t]
+                if use_mixed and td.get("open_price", 0) > 0:
+                    open_ret = (td["price"] - td["open_price"]) / td["open_price"] * 100
+                    rets[t] = round(td["change_pct"] * 0.5 + open_ret * 0.5, 2)
+                else:
+                    rets[t] = td["change_pct"]
             elif t in valid:
                 rets[t] = calc_return(data[t], days)
         if rets and weights:
@@ -1075,6 +1082,306 @@ def build_surge_list(surge_data, prefix="sg"):
     return f'<div class="tl-wrap">{rows}</div>'
 
 
+# ── 急変動（モメンタム）検出 ─────────────────────────────────────────────────
+
+
+@st.cache_resource
+def _momentum_state():
+    return {"snapshots": [], "max_snapshots": 12, "last_snapshot_ts": 0.0,
+            "opening_scores": None, "opening_ts": 0.0, "_date": ""}
+
+
+def _compute_theme_scores(themes, tachibana_prices):
+    """テーマごとの加重平均スコア（shrinkage補正済み）を {name: float} で返す"""
+    scores = {}
+    for theme in themes:
+        rets = {}
+        weights = theme.get("weights", {})
+        for t in theme["tickers"]:
+            if tachibana_prices and t in tachibana_prices:
+                rets[t] = tachibana_prices[t]["change_pct"]
+        if rets and weights:
+            w_sum = sum(_WEIGHT_MULTIPLIER.get(weights.get(t, 2), 1.0) for t in rets)
+            w_total = sum(rets[t] * _WEIGHT_MULTIPLIER.get(weights.get(t, 2), 1.0) for t in rets)
+            raw_avg = w_total / w_sum
+        elif rets:
+            raw_avg = sum(rets.values()) / len(rets)
+        else:
+            raw_avg = 0.0
+        n = len(rets)
+        avg = round((n * raw_avg) / (n + _SHRINKAGE_M), 2) if n > 0 else 0.0
+        scores[theme["name"]] = avg
+    return scores
+
+
+def record_momentum_snapshot(themes, tachibana_prices):
+    """5分間隔でテーマスコアのスナップショットを記録"""
+    if not tachibana_prices:
+        return
+    state = _momentum_state()
+    now = time.time()
+    today = datetime.now(_JST).strftime("%Y-%m-%d")
+
+    # 日付が変わったらリセット
+    if state["_date"] != today:
+        state["snapshots"] = []
+        state["opening_scores"] = None
+        state["opening_ts"] = 0.0
+        state["_date"] = today
+
+    # 5分間隔ガード（290秒 = 4分50秒でマージン）
+    if now - state["last_snapshot_ts"] < 290:
+        return
+
+    scores = _compute_theme_scores(themes, tachibana_prices)
+    if not scores:
+        return
+
+    state["snapshots"].append({"ts": now, "scores": scores})
+    state["last_snapshot_ts"] = now
+
+    # 最大12件保持
+    if len(state["snapshots"]) > state["max_snapshots"]:
+        state["snapshots"] = state["snapshots"][-state["max_snapshots"]:]
+
+    # 寄り付きスコア（9:00〜9:10の最初の記録）
+    if state["opening_scores"] is None:
+        from datetime import time as _t
+        jst_now = datetime.now(_JST)
+        if _t(9, 0) <= jst_now.time() <= _t(9, 10):
+            state["opening_scores"] = scores
+            state["opening_ts"] = now
+
+
+def compute_momentum_data(themes, tachibana_prices, lookback_minutes=5):
+    """現在スコアと指定分前のスコアの差分を計算"""
+    state = _momentum_state()
+    current_scores = _compute_theme_scores(themes, tachibana_prices)
+
+    if not current_scores:
+        return []
+
+    # lookback_minutes前のスナップショットを探す
+    now = time.time()
+    target_ts = now - lookback_minutes * 60
+    past_scores = None
+    for snap in reversed(state["snapshots"]):
+        if snap["ts"] <= target_ts:
+            past_scores = snap["scores"]
+            break
+
+    result = []
+    for theme in themes:
+        name = theme["name"]
+        current = current_scores.get(name, 0.0)
+        delta = None
+        if past_scores and name in past_scores:
+            delta = round(current - past_scores[name], 2)
+
+        # 寄り比
+        opening_delta = None
+        if state["opening_scores"] and name in state["opening_scores"]:
+            opening_delta = round(current - state["opening_scores"][name], 2)
+
+        # 個別銘柄の騰落率と価格
+        rets = {}
+        prices = {}
+        for t in theme["tickers"]:
+            if tachibana_prices and t in tachibana_prices:
+                rets[t] = tachibana_prices[t]["change_pct"]
+                td = tachibana_prices[t]
+                prices[t] = {"price": td["price"], "change": td["change_amt"]}
+
+        result.append({
+            **theme,
+            "avg": current,
+            "delta": delta,
+            "opening_delta": opening_delta,
+            "returns": rets,
+            "prices": prices,
+        })
+
+    return result
+
+
+@st.cache_data(show_spinner=False)
+def build_momentum_list(momentum_data, prefix="mm"):
+    """急変動リスト（通常モード）"""
+    rows = ""
+    for i, t in enumerate(momentum_data):
+        avg = t["avg"]
+        delta = t.get("delta")
+        r_color = THEME["up"] if avg >= 0 else THEME["down"]
+        arrow = "▲" if avg >= 0 else "▼"
+        sign = "+" if avg >= 0 else ""
+        cc = t["cat_color"]
+        r, g, b = hex_to_rgb(cc)
+        tag_style = (
+            f"background:rgba({r},{g},{b},0.12);"
+            f"color:{cc};"
+            f"border:1px solid rgba({r},{g},{b},0.3);"
+        )
+        names = t.get("names", {})
+        prices = t.get("prices", {})
+        weights = t.get("weights", {})
+        stocks_html = ""
+        for ticker, sr in sorted(t["returns"].items(), key=lambda x: x[1], reverse=True):
+            sc = THEME["up"] if sr >= 0 else THEME["down"]
+            sa = "▲" if sr >= 0 else "▼"
+            ss = "+" if sr >= 0 else ""
+            name_span = (
+                f'<span class="tl-sname">{names[ticker]}</span>'
+                if ticker in names else ""
+            )
+            pinfo = prices.get(ticker)
+            price_html = ""
+            if pinfo:
+                price_html = (
+                    f'<span class="tl-price">{fmt_price(pinfo["price"])}</span>'
+                    f'<span class="tl-change">{fmt_change(pinfo["change"])}</span>'
+                )
+            badge_html = ""
+            if weights:
+                w = weights.get(ticker, 2)
+                label, color = _WEIGHT_BADGE.get(w, ("B", "#4488FF"))
+                badge_html = (
+                    f'<span class="tl-contrib" '
+                    f'style="color:{color};background:rgba(0,0,0,0);'
+                    f'border:1px solid {color};">{label}</span>'
+                )
+            stocks_html += (
+                f'<div class="tl-stock">'
+                f'<span><span class="tl-ticker">{ticker}</span>{name_span}</span>'
+                f'<span class="tl-stock-right">{price_html}{badge_html}'
+                f'<span class="tl-sret" style="color:{sc}">{sa} {ss}{sr:.2f}%</span></span>'
+                f'</div>'
+            )
+
+        # delta表示
+        delta_html = ""
+        if delta is not None:
+            d_color = THEME["up"] if delta >= 0 else THEME["down"]
+            d_arrow = "▲" if delta >= 0 else "▼"
+            d_sign = "+" if delta >= 0 else ""
+            delta_html = (
+                f'<span class="tl-ret" style="color:{d_color};font-size:0.85rem;margin-left:4px;">'
+                f'{d_arrow} {d_sign}{delta:.2f}pp</span>'
+            )
+
+        uid = f"{prefix}{i}"
+        rows += (
+            f'<div>'
+            f'  <input type="checkbox" id="{uid}" class="tl-chk">'
+            f'  <label for="{uid}" class="tl-row">'
+            f'    <div class="tl-left">'
+            f'      <div class="tl-badge">{i + 1}</div>'
+            f'      <span class="tl-name">{t["name"]}</span>'
+            f'      <span class="tl-tag" style="{tag_style}">{t["category"]}</span>'
+            f'    </div>'
+            f'    <div class="tl-right">'
+            f'      <span class="tl-ret" style="color:{r_color}">{arrow} {sign}{avg:.2f}%</span>'
+            f'{delta_html}'
+            f'      <span class="tl-chevron">&#9660;</span>'
+            f'    </div>'
+            f'  </label>'
+            f'  <div class="tl-panel">{stocks_html}</div>'
+            f'</div>'
+        )
+
+    return f'<div class="tl-wrap">{rows}</div>'
+
+
+@st.cache_data(show_spinner=False)
+def build_momentum_compact(momentum_data, prefix="cmm"):
+    """急変動リスト（ざら場モード）"""
+    items = momentum_data[:50]
+    half = (len(items) + 1) // 2
+    columns = [items[:half], items[half:]]
+
+    def _build_col(col_items, start_rank):
+        html = ""
+        for i, t in enumerate(col_items):
+            rank = start_rank + i
+            avg = t["avg"]
+            delta = t.get("delta")
+            r_color = THEME["up"] if avg >= 0 else THEME["down"]
+            arrow = "▲" if avg >= 0 else "▼"
+            sign = "+" if avg >= 0 else ""
+
+            names = t.get("names", {})
+            prices = t.get("prices", {})
+            weights = t.get("weights", {})
+
+            stocks_html = ""
+            for ticker, sr in sorted(t["returns"].items(), key=lambda x: x[1], reverse=True):
+                sc = THEME["up"] if sr >= 0 else THEME["down"]
+                sa = "▲" if sr >= 0 else "▼"
+                ss = "+" if sr >= 0 else ""
+                name_span = (
+                    f'<span class="tl-sname">{names[ticker]}</span>'
+                    if ticker in names else ""
+                )
+                pinfo = prices.get(ticker)
+                price_html = ""
+                if pinfo:
+                    price_html = (
+                        f'<span class="tl-price">{fmt_price(pinfo["price"])}</span>'
+                        f'<span class="tl-change">{fmt_change(pinfo["change"])}</span>'
+                    )
+                badge_html = ""
+                if weights:
+                    w = weights.get(ticker, 2)
+                    label, color = _WEIGHT_BADGE.get(w, ("B", "#4488FF"))
+                    badge_html = (
+                        f'<span class="tl-contrib" '
+                        f'style="color:{color};background:rgba(0,0,0,0);'
+                        f'border:1px solid {color};">{label}</span>'
+                    )
+                stocks_html += (
+                    f'<div class="cp-stock">'
+                    f'<span class="cp-stock-left"><span class="tl-ticker">{ticker}</span>{name_span}</span>'
+                    f'<span class="cp-stock-right">{price_html}{badge_html}'
+                    f'<span class="tl-sret" style="color:{sc}">{sa} {ss}{sr:.2f}%</span></span>'
+                    f'</div>'
+                )
+
+            # delta表示（コンパクト）
+            delta_str = ""
+            if delta is not None:
+                d_color = THEME["up"] if delta >= 0 else THEME["down"]
+                d_sign = "+" if delta >= 0 else ""
+                delta_str = (
+                    f'<span class="cp-ret" style="color:{d_color};font-size:0.65rem;margin-left:2px;">'
+                    f'{d_sign}{delta:.2f}pp</span>'
+                )
+
+            uid = f"{prefix}{rank}"
+            html += (
+                f'<div>'
+                f'<input type="checkbox" id="{uid}" class="cp-chk">'
+                f'<label for="{uid}" class="cp-row">'
+                f'<span class="cp-rank">{rank}</span>'
+                f'<span class="cp-name">{t["name"]}</span>'
+                f'<span class="cp-ret" style="color:{r_color}">{arrow}{sign}{avg:.2f}%</span>'
+                f'{delta_str}'
+                f'<span class="cp-chevron">&#9660;</span>'
+                f'</label>'
+                f'<div class="cp-panel">{stocks_html}</div>'
+                f'</div>'
+            )
+        return html
+
+    left_html = _build_col(columns[0], 1)
+    right_html = _build_col(columns[1], half + 1)
+
+    return (
+        f'<div class="cp-wrap">'
+        f'<div class="cp-col">{left_html}</div>'
+        f'<div class="cp-col">{right_html}</div>'
+        f'</div>'
+    )
+
+
 # ── データロード ──────────────────────────────────────────────────────────────
 all_us_tickers = tuple(dict.fromkeys(t for theme in US_THEMES for t in theme["tickers"]))
 
@@ -1217,6 +1524,8 @@ if _action == _compact_icon:
     st.session_state.compact_mode = not st.session_state.compact_mode
     del st.session_state["header_pills"]
     build_compact_list.clear()
+    build_momentum_compact.clear()
+    build_momentum_list.clear()
     st.rerun()
 elif _action == _dark_icon:
     st.session_state.dark_mode = not st.session_state.dark_mode
@@ -1224,6 +1533,8 @@ elif _action == _dark_icon:
     build_theme_list.clear()
     build_surge_list.clear()
     build_compact_list.clear()
+    build_momentum_list.clear()
+    build_momentum_compact.clear()
     st.rerun()
 elif _tachi_has_secrets and _action == _tachi_icon:
     del st.session_state["header_pills"]
@@ -1262,6 +1573,8 @@ elif _action == "↺":
     build_theme_list.clear()
     build_surge_list.clear()
     build_compact_list.clear()
+    build_momentum_list.clear()
+    build_momentum_compact.clear()
     st.rerun()
 st.markdown('<div class="header-line"></div>', unsafe_allow_html=True)
 
@@ -1284,6 +1597,11 @@ elif st.session_state.jp_ts_seen < _state["fresh_ts"]:
 @st.fragment(run_every=10)
 def _periodic_check():
     _s = _jp_state()
+    # モメンタムスナップショット記録（取引時間中のみ）
+    if is_trading_hours():
+        _mm_prices = _tachibana_fetch_state()["prices"]
+        if _mm_prices:
+            record_momentum_snapshot(JP_THEMES, _mm_prices)
     # J-Quantsバックグラウンドフェッチ完了検知
     if st.session_state.get("jp_ts_seen", 0) < _s["fresh_ts"]:
         st.session_state.jp_ts_seen = _s["fresh_ts"]
@@ -1376,9 +1694,10 @@ def _render_jp_tab():
 
     _is_rt      = (period_jp == "Now")  # リアルタイム
     _trading    = is_trading_hours()
-    _use_tachi  = _is_rt and _trading and bool(_tachibana_prices)
+    _use_tachi  = (period_jp in ("Now", "1D")) and _trading and bool(_tachibana_prices)
     days_jp     = 2 if _is_rt else JP_PERIODS[period_jp]
     _tachi_for_compute = _tachibana_prices if _use_tachi else None
+    _use_mixed  = _use_tachi  # Now/1D + リアルタイム接続時にミックス指標
 
     if jp_data.empty and not _tachi_for_compute:
         st.markdown(
@@ -1390,6 +1709,7 @@ def _render_jp_tab():
         jp_theme_data = compute_theme_data(
             JP_THEMES, jp_data, days_jp,
             tachibana=_tachi_for_compute,
+            use_mixed=_use_mixed,
         )
         if order_jp == "▼ ワースト":
             jp_theme_data = list(reversed(jp_theme_data))
@@ -1403,7 +1723,9 @@ def _render_jp_tab():
         datetime.fromtimestamp(_state["fresh_ts"]).strftime("%Y-%m-%d %H:%M")
         if _state["fresh_ts"] > 0 else "取得中..."
     )
-    if _use_tachi:
+    if _use_mixed:
+        _price_src = f"ミックス指標：前日比×寄り比（立花証券 {datetime.now(_JST).strftime('%H:%M')}）"
+    elif _use_tachi:
         _price_src = f"リアルタイム（立花証券 {datetime.now(_JST).strftime('%H:%M')} 更新）"
     elif _is_rt and _tachibana_fetch_state()["fetching"]:
         _price_src = "リアルタイム取得中..."
@@ -1474,14 +1796,107 @@ def _render_us_tab():
     )
 
 
+@st.fragment
+def _render_momentum_tab():
+    _tachibana_prices = _tachibana_fetch_state()["prices"]
+    _trading = is_trading_hours()
+
+    if not _trading:
+        st.markdown(
+            f'<p style="color:{THEME["text_sub"]};font-size:0.9rem;margin-top:20px;">'
+            '取引時間中（9:00〜15:30）のみ更新されます。</p>',
+            unsafe_allow_html=True,
+        )
+        return
+
+    if not _tachibana_prices:
+        st.markdown(
+            f'<p style="color:{THEME["text_sub"]};font-size:0.9rem;margin-top:20px;">'
+            'リアルタイム株価を取得中です...</p>',
+            unsafe_allow_html=True,
+        )
+        return
+
+    state = _momentum_state()
+    n_snapshots = len(state["snapshots"])
+
+    if n_snapshots < 2:
+        if n_snapshots == 0:
+            msg = "データ蓄積中です（あと約10分）..."
+        else:
+            msg = "データ蓄積中です（あと約5分）..."
+        st.markdown(
+            f'<p style="color:{THEME["text_sub"]};font-size:0.9rem;margin-top:20px;">'
+            f'{msg}</p>',
+            unsafe_allow_html=True,
+        )
+        return
+
+    _col_sort, _col_lookback = st.columns([5, 3])
+    with _col_sort:
+        sort_mode = st.radio(
+            "ソート", ["変動幅", "▲ 上昇", "▼ 下落"], horizontal=True,
+            label_visibility="collapsed", key="momentum_sort",
+        )
+    with _col_lookback:
+        lookback_options = ["5分前", "10分前"]
+        if state["opening_scores"]:
+            lookback_options.append("寄り比")
+        lookback = st.radio(
+            "比較", lookback_options, horizontal=True,
+            label_visibility="collapsed", key="momentum_lookback",
+        )
+
+    if lookback == "10分前":
+        lookback_min = 10
+    else:
+        lookback_min = 5
+
+    momentum_data = compute_momentum_data(JP_THEMES, _tachibana_prices, lookback_minutes=lookback_min)
+
+    # 寄り比の場合、deltaをopening_deltaで上書き
+    if lookback == "寄り比":
+        for item in momentum_data:
+            item["delta"] = item.get("opening_delta")
+
+    # delta=Noneのものを除外
+    momentum_data = [d for d in momentum_data if d.get("delta") is not None]
+
+    # ソート
+    if sort_mode == "変動幅":
+        momentum_data.sort(key=lambda x: abs(x.get("delta") or 0), reverse=True)
+    elif sort_mode == "▲ 上昇":
+        momentum_data.sort(key=lambda x: (x.get("delta") or 0), reverse=True)
+    elif sort_mode == "▼ 下落":
+        momentum_data.sort(key=lambda x: (x.get("delta") or 0), reverse=False)
+
+    if not momentum_data:
+        st.markdown(
+            f'<p style="color:{THEME["text_sub"]};font-size:0.9rem;margin-top:20px;">'
+            f'指定期間のデータがまだありません。</p>',
+            unsafe_allow_html=True,
+        )
+        return
+
+    if st.session_state.compact_mode:
+        st.markdown(build_momentum_compact(momentum_data[:50], prefix="cmm"), unsafe_allow_html=True)
+    else:
+        st.markdown(build_momentum_list(momentum_data, prefix="mm"), unsafe_allow_html=True)
+
+    st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
+    st.caption(f"スナップショット: {n_snapshots}件（最大12件 / 1時間分）　｜　リアルタイム（立花証券）")
+
+
 # ── タブ作成 & fragment 呼び出し ──────────────────────────────────────────────
-tab_jp, tab_surge, tab_us = st.tabs([
-    "🇯🇵 日本株", "🔥 急騰察知", "🇺🇸 米国株",
+tab_jp, tab_surge, tab_momentum, tab_us = st.tabs([
+    "🇯🇵 日本株", "🔥 急騰察知", "⚡ 急変動", "🇺🇸 米国株",
 ])
 
 with tab_jp:
     _render_jp_tab()
 with tab_surge:
     _render_surge_tab()
+with tab_momentum:
+    _render_momentum_tab()
 with tab_us:
     _render_us_tab()
