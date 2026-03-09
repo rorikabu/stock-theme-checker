@@ -762,6 +762,8 @@ def compute_theme_data(themes, data, days, tachibana=None, use_mixed=False):
         for t in theme["tickers"]:
             if tachibana and t in tachibana:
                 td = tachibana[t]
+                if td["price"] <= 0:
+                    continue  # 未約定・データ欠損 → スキップ
                 op_price = _op_prices.get(t, 0)
                 if use_mixed and op_price > 0:
                     cp = td["change_pct"]
@@ -1049,12 +1051,12 @@ def compute_surge_data(themes, volume_df, price_df, tachibana=None):
                 else:
                     surges[t] = 0.0
             # 騰落率
-            if tachibana and t in tachibana:
+            if tachibana and t in tachibana and tachibana[t]["price"] > 0:
                 rets[t] = tachibana[t]["change_pct"]
             elif t in price_df.columns:
                 rets[t] = calc_return(price_df[t], 2)
             # 現在価格
-            if tachibana and t in tachibana:
+            if tachibana and t in tachibana and tachibana[t]["price"] > 0:
                 td = tachibana[t]
                 prices[t] = {"price": td["price"], "change": td["change_amt"]}
             elif t in price_df.columns:
@@ -1222,7 +1224,7 @@ def _compute_theme_scores(themes, tachibana_prices):
         rets = {}
         weights = theme.get("weights", {})
         for t in theme["tickers"]:
-            if tachibana_prices and t in tachibana_prices:
+            if tachibana_prices and t in tachibana_prices and tachibana_prices[t]["price"] > 0:
                 rets[t] = tachibana_prices[t]["change_pct"]
         if rets and weights:
             w_sum = sum(_WEIGHT_MULTIPLIER.get(weights.get(t, 2), 1.0) for t in rets)
