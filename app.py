@@ -756,13 +756,18 @@ def compute_theme_data(themes, data, days, tachibana=None, use_mixed=False):
     for theme in themes:
         valid = [t for t in theme["tickers"] if t in data.columns]
         rets = {}
+        change_pcts = {}  # 前日比%（ミックス時のみ）
+        open_rets = {}    # 寄り比%（ミックス時のみ）
         weights = theme.get("weights", {})
         for t in theme["tickers"]:
             if tachibana and t in tachibana:
                 td = tachibana[t]
                 if use_mixed and td.get("open_price", 0) > 0:
-                    open_ret = (td["price"] - td["open_price"]) / td["open_price"] * 100
-                    rets[t] = round(td["change_pct"] * 0.5 + open_ret * 0.5, 2)
+                    cp = td["change_pct"]
+                    op = round((td["price"] - td["open_price"]) / td["open_price"] * 100, 2)
+                    rets[t] = round(cp * 0.5 + op * 0.5, 2)
+                    change_pcts[t] = cp
+                    open_rets[t] = op
                 else:
                     rets[t] = td["change_pct"]
             elif t in valid:
@@ -789,7 +794,23 @@ def compute_theme_data(themes, data, days, tachibana=None, use_mixed=False):
                     prices[t] = {"price": float(s.iloc[-1]), "change": float(s.iloc[-1] - s.iloc[-2])}
                 elif len(s) == 1:
                     prices[t] = {"price": float(s.iloc[-1]), "change": 0.0}
-        result.append({**theme, "avg": avg, "returns": rets, "prices": prices})
+        item = {**theme, "avg": avg, "returns": rets, "prices": prices}
+        # ミックス時: 内訳データを追加
+        if use_mixed and change_pcts:
+            _wm = weights
+            if _wm:
+                _ws = sum(_WEIGHT_MULTIPLIER.get(_wm.get(t, 2), 1.0) for t in change_pcts)
+                _cp_avg = sum(change_pcts[t] * _WEIGHT_MULTIPLIER.get(_wm.get(t, 2), 1.0) for t in change_pcts) / _ws if _ws else 0.0
+                _op_avg = sum(open_rets[t] * _WEIGHT_MULTIPLIER.get(_wm.get(t, 2), 1.0) for t in open_rets) / _ws if _ws else 0.0
+            else:
+                _cp_avg = sum(change_pcts.values()) / len(change_pcts)
+                _op_avg = sum(open_rets.values()) / len(open_rets)
+            _nc = len(change_pcts)
+            item["avg_change_pct"] = round((_nc * _cp_avg) / (_nc + _SHRINKAGE_M), 2) if _nc else 0.0
+            item["avg_open_ret"] = round((_nc * _op_avg) / (_nc + _SHRINKAGE_M), 2) if _nc else 0.0
+            item["change_pcts"] = change_pcts
+            item["open_rets"] = open_rets
+        result.append(item)
     result.sort(key=lambda x: x["avg"], reverse=True)
     return result
 
@@ -797,11 +818,13 @@ def compute_theme_data(themes, data, days, tachibana=None, use_mixed=False):
 @st.cache_data(show_spinner=False)
 def build_theme_list(theme_data, prefix="tl"):
     rows = ""
+    is_mixed = bool(theme_data and "change_pcts" in theme_data[0])
     for i, t in enumerate(theme_data):
         avg = t["avg"]
         r_color = THEME["up"] if avg >= 0 else THEME["down"]
         arrow = "▲" if avg >= 0 else "▼"
         sign = "+" if avg >= 0 else ""
+        unit = "pt" if is_mixed else "%"
         cc = t["cat_color"]
         r, g, b = hex_to_rgb(cc)
         tag_style = (
@@ -809,9 +832,25 @@ def build_theme_list(theme_data, prefix="tl"):
             f"color:{cc};"
             f"border:1px solid rgba({r},{g},{b},0.3);"
         )
+        # ミックス時: テーマ行に前日比・寄り比の内訳を表示
+        comp_html = ""
+        if is_mixed:
+            acp = t.get("avg_change_pct", 0.0)
+            aor = t.get("avg_open_ret", 0.0)
+            acp_c = THEME["up"] if acp >= 0 else THEME["down"]
+            aor_c = THEME["up"] if aor >= 0 else THEME["down"]
+            comp_html = (
+                f'<span style="font-size:0.72rem;margin-left:6px;">'
+                f'<span style="color:{acp_c}">前{acp:+.1f}%</span>'
+                f'<span style="color:{THEME["muted"]};margin:0 2px;">|</span>'
+                f'<span style="color:{aor_c}">寄{aor:+.1f}%</span>'
+                f'</span>'
+            )
         names   = t.get("names", {})
         prices  = t.get("prices", {})
         weights = t.get("weights", {})
+        _cp_map = t.get("change_pcts", {})
+        _or_map = t.get("open_rets", {})
         stocks_html = ""
         for ticker, sr in sorted(t["returns"].items(), key=lambda x: x[1], reverse=True):
             sc = THEME["up"] if sr >= 0 else THEME["down"]
@@ -837,11 +876,23 @@ def build_theme_list(theme_data, prefix="tl"):
                     f'style="color:{color};background:rgba(0,0,0,0);'
                     f'border:1px solid {color};">{label}</span>'
                 )
+            # ミックス時: 前日比%と寄り比%を個別表示
+            if is_mixed and ticker in _cp_map:
+                cpv = _cp_map[ticker]
+                orv = _or_map[ticker]
+                cpvc = THEME["up"] if cpv >= 0 else THEME["down"]
+                orvc = THEME["up"] if orv >= 0 else THEME["down"]
+                ret_html = (
+                    f'<span class="tl-sret" style="color:{cpvc}">前{cpv:+.1f}%</span>'
+                    f'<span class="tl-sret" style="color:{orvc}">寄{orv:+.1f}%</span>'
+                )
+            else:
+                ret_html = f'<span class="tl-sret" style="color:{sc}">{sa} {ss}{sr:.2f}%</span>'
             stocks_html += (
                 f'<div class="tl-stock">'
                 f'<span><span class="tl-ticker">{ticker}</span>{name_span}</span>'
                 f'<span class="tl-stock-right">{price_html}{badge_html}'
-                f'<span class="tl-sret" style="color:{sc}">{sa} {ss}{sr:.2f}%</span></span>'
+                f'{ret_html}</span>'
                 f'</div>'
             )
 
@@ -856,7 +907,8 @@ def build_theme_list(theme_data, prefix="tl"):
             f'      <span class="tl-tag" style="{tag_style}">{t["category"]}</span>'
             f'    </div>'
             f'    <div class="tl-right">'
-            f'      <span class="tl-ret" style="color:{r_color}">{arrow} {sign}{avg:.2f}%</span>'
+            f'      <span class="tl-ret" style="color:{r_color}">{arrow} {sign}{avg:.2f}{unit}</span>'
+            f'{comp_html}'
             f'      <span class="tl-chevron">&#9660;</span>'
             f'    </div>'
             f'  </label>'
@@ -871,6 +923,7 @@ def build_theme_list(theme_data, prefix="tl"):
 def build_compact_list(theme_data, prefix="cp"):
     """ざら場モード用コンパクト表示（2列、50テーマ一覧）"""
     items = theme_data[:50]
+    is_mixed = bool(items and "change_pcts" in items[0])
     half = (len(items) + 1) // 2
     columns = [items[:half], items[half:]]
 
@@ -882,10 +935,13 @@ def build_compact_list(theme_data, prefix="cp"):
             r_color = THEME["up"] if avg >= 0 else THEME["down"]
             arrow = "▲" if avg >= 0 else "▼"
             sign = "+" if avg >= 0 else ""
+            unit = "pt" if is_mixed else "%"
 
             names = t.get("names", {})
             prices = t.get("prices", {})
             weights = t.get("weights", {})
+            _cp_map = t.get("change_pcts", {})
+            _or_map = t.get("open_rets", {})
 
             stocks_html = ""
             for ticker, sr in sorted(t["returns"].items(), key=lambda x: x[1], reverse=True):
@@ -912,11 +968,22 @@ def build_compact_list(theme_data, prefix="cp"):
                         f'style="color:{color};background:rgba(0,0,0,0);'
                         f'border:1px solid {color};">{label}</span>'
                     )
+                if is_mixed and ticker in _cp_map:
+                    cpv = _cp_map[ticker]
+                    orv = _or_map[ticker]
+                    cpvc = THEME["up"] if cpv >= 0 else THEME["down"]
+                    orvc = THEME["up"] if orv >= 0 else THEME["down"]
+                    ret_html = (
+                        f'<span class="tl-sret" style="color:{cpvc}">前{cpv:+.1f}%</span>'
+                        f'<span class="tl-sret" style="color:{orvc}">寄{orv:+.1f}%</span>'
+                    )
+                else:
+                    ret_html = f'<span class="tl-sret" style="color:{sc}">{sa} {ss}{sr:.2f}%</span>'
                 stocks_html += (
                     f'<div class="cp-stock">'
                     f'<span class="cp-stock-left"><span class="tl-ticker">{ticker}</span>{name_span}</span>'
                     f'<span class="cp-stock-right">{price_html}{badge_html}'
-                    f'<span class="tl-sret" style="color:{sc}">{sa} {ss}{sr:.2f}%</span></span>'
+                    f'{ret_html}</span>'
                     f'</div>'
                 )
 
@@ -927,7 +994,7 @@ def build_compact_list(theme_data, prefix="cp"):
                 f'<label for="{uid}" class="cp-row">'
                 f'<span class="cp-rank">{rank}</span>'
                 f'<span class="cp-name">{t["name"]}</span>'
-                f'<span class="cp-ret" style="color:{r_color}">{arrow}{sign}{avg:.2f}%</span>'
+                f'<span class="cp-ret" style="color:{r_color}">{arrow}{sign}{avg:.2f}{unit}</span>'
                 f'<span class="cp-chevron">&#9660;</span>'
                 f'</label>'
                 f'<div class="cp-panel">{stocks_html}</div>'
