@@ -150,6 +150,7 @@ _WEIGHT_BADGE = {
 _WEIGHT_MULTIPLIER = {4: 4.0, 3: 2.0, 2: 1.0, 1: 0.5}
 # 銘柄数が少ないテーマの補正強度（大きいほど0%に引き戻す力が強い）
 _SHRINKAGE_M = 5
+_THEME_DISPLAY_LIMIT = 100  # 通常モード表示上限（「すべて表示」で解除）
 
 JP_PERIODS = {"Now": "rt", "1D": 2, "5D": 6, "1M": 22}
 PERIODS     = {"1D": 2, "5D": 6, "1M": 22}  # 米国株用
@@ -1746,6 +1747,8 @@ elif _action == "↺":
     build_compact_list.clear()
     build_momentum_list.clear()
     build_momentum_compact.clear()
+    st.session_state.pop("show_all_jp", None)
+    st.session_state.pop("show_all_us", None)
     st.rerun()
 st.markdown('<div class="header-line"></div>', unsafe_allow_html=True)
 
@@ -1902,7 +1905,12 @@ def _render_jp_tab():
         if st.session_state.compact_mode:
             st.markdown(build_compact_list(jp_theme_data[:50], prefix="cpjp"), unsafe_allow_html=True)
         else:
-            st.markdown(build_theme_list(jp_theme_data, prefix="jp"), unsafe_allow_html=True)
+            _jp_limit = len(jp_theme_data) if st.session_state.get("show_all_jp") else _THEME_DISPLAY_LIMIT
+            st.markdown(build_theme_list(jp_theme_data[:_jp_limit], prefix="jp"), unsafe_allow_html=True)
+            if len(jp_theme_data) > _THEME_DISPLAY_LIMIT and not st.session_state.get("show_all_jp"):
+                if st.button(f"すべて表示（全{len(jp_theme_data)}テーマ）", key="more_jp"):
+                    st.session_state.show_all_jp = True
+                    st.rerun()
 
     st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
     _updated = (
@@ -1975,7 +1983,12 @@ def _render_us_tab():
     if st.session_state.compact_mode:
         st.markdown(build_compact_list(us_theme_data[:50], prefix="cpus"), unsafe_allow_html=True)
     else:
-        st.markdown(build_theme_list(us_theme_data, prefix="us"), unsafe_allow_html=True)
+        _us_limit = len(us_theme_data) if st.session_state.get("show_all_us") else _THEME_DISPLAY_LIMIT
+        st.markdown(build_theme_list(us_theme_data[:_us_limit], prefix="us"), unsafe_allow_html=True)
+        if len(us_theme_data) > _THEME_DISPLAY_LIMIT and not st.session_state.get("show_all_us"):
+            if st.button(f"すべて表示（全{len(us_theme_data)}テーマ）", key="more_us"):
+                st.session_state.show_all_us = True
+                st.rerun()
     st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
     _us_src = "キャッシュ（本日取得済）" if _us["date"] == _today_str else "Yahoo Finance"
     st.caption(
