@@ -1876,13 +1876,14 @@ def _render_jp_tab():
     # ミックス指標: Now=ざら場中のみ, 1D=前営業日の始値ファイルでもOK
     _op_state = _opening_prices_state()
     _has_opening = bool(_op_state["prices"])
-    _has_file   = bool(_op_state["_file_prices"])
+    _file_prices = _op_state.get("_file_prices", {})
+    _has_file   = bool(_file_prices)
     if period_jp == "Now":
         _use_mixed = _use_tachi or _has_opening
         _op_for_compute = _op_state["prices"] if _has_opening else None
     elif period_jp == "1D":
         _use_mixed = _use_tachi or _has_opening or _has_file
-        _op_for_compute = _op_state["prices"] if _has_opening else (_op_state["_file_prices"] if _has_file else None)
+        _op_for_compute = _op_state["prices"] if _has_opening else (_file_prices if _has_file else None)
     else:
         _use_mixed = False
         _op_for_compute = None
