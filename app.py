@@ -1915,7 +1915,7 @@ def _render_jp_tab():
 
     st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
     _updated = (
-        datetime.fromtimestamp(_state["fresh_ts"]).strftime("%Y-%m-%d %H:%M")
+        datetime.fromtimestamp(_state["fresh_ts"], tz=_JST).strftime("%Y-%m-%d %H:%M")
         if _state["fresh_ts"] > 0 else "取得中..."
     )
     if _use_mixed and _use_tachi:
