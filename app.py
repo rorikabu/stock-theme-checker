@@ -165,6 +165,18 @@ def is_trading_hours() -> bool:
         return False
     return _t(9, 0) <= now.time() <= _t(15, 30)
 
+
+def _is_post_market_gap(fresh_ts: float) -> bool:
+    """引け後〜J-Quants更新完了までの空白時間か（平日 15:30〜、J-Quants未更新）"""
+    from datetime import time as _t
+    now = datetime.now(_JST)
+    if now.weekday() >= 5:
+        return False
+    if now.time() < _t(15, 30):
+        return False
+    today_close = now.replace(hour=15, minute=30, second=0, microsecond=0)
+    return fresh_ts < today_close.timestamp()
+
 # ── Tachibana API 定数 ────────────────────────────────────────────────────────
 _TACHIBANA_SECRETS = Path(".streamlit/secrets.toml")
 _TACHIBANA_COLUMNS = "pDPP,pPRP,pDYRP,pDYWP"  # 現値,前日終値,前日比額,前日比%
@@ -502,12 +514,12 @@ def _jp_bg_fetch(codes):
         state["fetching"] = False
 
 
-_JP_REFRESH_HOUR = 15
-_JP_REFRESH_MIN  = 45
+_JP_REFRESH_HOUR = 17
+_JP_REFRESH_MIN  = 0
 
 
 def _jp_needs_refresh(fresh_ts: float) -> bool:
-    """毎日15:45以降に1回だけ更新が必要か判定"""
+    """毎日17:00以降に1回だけ更新が必要か判定（J-Quantsは17時頃に当日データ反映）"""
     from datetime import time as _t
     now = datetime.now(_JST)
     today_due = now.replace(hour=_JP_REFRESH_HOUR, minute=_JP_REFRESH_MIN, second=0, microsecond=0)
@@ -744,11 +756,29 @@ def fmt_change(v):
     return f"{sign}{int(v):,}" if v == int(v) else f"{sign}{v:,.1f}"
 
 
+def _is_tachibana_valid(tachibana, code, ref_price):
+    """立花証券の価格が有効か判定（価格>0 かつ 基準値と50%以内）"""
+    if not (tachibana and code in tachibana and tachibana[code]["price"] > 0):
+        return False
+    if ref_price and ref_price > 0:
+        if abs(tachibana[code]["price"] - ref_price) / ref_price > 0.5:
+            return False
+    return True
+
+
+@st.cache_resource
+def _compute_cache():
+    return {
+        "jp": {"key": None, "result": None},
+        "us": {"key": None, "result": None},
+    }
+
+
 def compute_theme_data(themes, data, days, tachibana=None, use_mixed=False, opening_prices=None):
     """
     tachibana: {code: {price, prev, change_amt, change_pct, open_price}} or None
     - tachibana が渡された場合: 騰落率に pDYWP を使用（呼び出し側が制御）
-    - use_mixed=True: 前日比×0.5 + 寄り比×0.5 のミックス指標を使用
+    - use_mixed=True: 前日比×0.7 + 寄り比×0.3 のミックス指標を使用
     - opening_prices: 始値辞書（外から渡す。省略時は _opening_prices_state から取得）
     - tachibana が None: J-Quants 履歴データのみ使用
     - 現在価格表示: Tachibana > J-Quants フォールバック
@@ -762,18 +792,14 @@ def compute_theme_data(themes, data, days, tachibana=None, use_mixed=False, open
         weights = theme.get("weights", {})
         _op_prices = (opening_prices if opening_prices is not None else _opening_prices_state()["prices"]) if use_mixed else {}
         for t in theme["tickers"]:
-            # 立花データの有効性チェック: 価格0以下 or 始値と50%超乖離 → J-Quantsフォールバック
-            _tachi_ok = (tachibana and t in tachibana and tachibana[t]["price"] > 0)
-            if _tachi_ok and _op_prices.get(t, 0) > 0:
-                if abs(tachibana[t]["price"] - _op_prices[t]) / _op_prices[t] > 0.5:
-                    _tachi_ok = False  # 立花APIの価格異常（例: 9434ソフトバンク）
+            _tachi_ok = _is_tachibana_valid(tachibana, t, _op_prices.get(t, 0))
             if _tachi_ok:
                 td = tachibana[t]
                 op_price = _op_prices.get(t, 0)
                 if use_mixed and op_price > 0:
                     cp = td["change_pct"]
                     op = round((td["price"] - op_price) / op_price * 100, 2)
-                    rets[t] = round(cp * 0.5 + op * 0.5, 2)
+                    rets[t] = round(cp * 0.7 + op * 0.3, 2)
                     change_pcts[t] = cp
                     open_rets[t] = op
                 else:
@@ -789,7 +815,7 @@ def compute_theme_data(themes, data, days, tachibana=None, use_mixed=False, open
                         if abs(op) > 50:  # 始値と現値の乖離が大きすぎる
                             rets[t] = cp
                         else:
-                            rets[t] = round(cp * 0.5 + op * 0.5, 2)
+                            rets[t] = round(cp * 0.7 + op * 0.3, 2)
                             change_pcts[t] = cp
                             open_rets[t] = op
                     else:
@@ -809,11 +835,7 @@ def compute_theme_data(themes, data, days, tachibana=None, use_mixed=False, open
         avg = round((n * raw_avg) / (n + _SHRINKAGE_M), 2) if n > 0 else 0.0
         prices = {}
         for t in theme["tickers"]:
-            # 立花データの有効性チェック（上のループと同じ条件）
-            _tp_ok = (tachibana and t in tachibana and tachibana[t]["price"] > 0)
-            if _tp_ok and _op_prices.get(t, 0) > 0:
-                if abs(tachibana[t]["price"] - _op_prices[t]) / _op_prices[t] > 0.5:
-                    _tp_ok = False
+            _tp_ok = _is_tachibana_valid(tachibana, t, _op_prices.get(t, 0))
             if _tp_ok:
                 td = tachibana[t]
                 prices[t] = {"price": td["price"], "change": td["change_amt"]}
@@ -1062,148 +1084,6 @@ def build_compact_list(theme_data, prefix="cp"):
     )
 
 
-# ── 出来高急騰検出 ──────────────────────────────────────────────────────────
-
-
-def compute_surge_data(themes, volume_df, price_df, tachibana=None):
-    """各銘柄の直近出来高 / 過去5日平均出来高 を計算してテーマ別に集計。"""
-    result = []
-    for theme in themes:
-        surges = {}
-        rets = {}
-        prices = {}
-        for t in theme["tickers"]:
-            # 出来高倍率
-            if volume_df is not None and t in volume_df.columns:
-                vs = volume_df[t].dropna()
-                if len(vs) >= 2:
-                    latest_vol = float(vs.iloc[-1])
-                    past = vs.iloc[max(0, len(vs) - 6) : len(vs) - 1]
-                    avg_vol = float(past.mean()) if len(past) > 0 else 0.0
-                    surges[t] = round(latest_vol / avg_vol, 2) if avg_vol > 0 else 0.0
-                else:
-                    surges[t] = 0.0
-            # 立花データの有効性チェック: J-Quants最終値と50%超乖離 → フォールバック
-            _t_ok = (tachibana and t in tachibana and tachibana[t]["price"] > 0)
-            if _t_ok and t in price_df.columns:
-                _last = price_df[t].dropna()
-                if len(_last) >= 1 and abs(tachibana[t]["price"] - float(_last.iloc[-1])) / float(_last.iloc[-1]) > 0.5:
-                    _t_ok = False
-            # 騰落率
-            if _t_ok:
-                rets[t] = tachibana[t]["change_pct"]
-            elif t in price_df.columns:
-                rets[t] = calc_return(price_df[t], 2)
-            # 現在価格
-            if _t_ok:
-                td = tachibana[t]
-                prices[t] = {"price": td["price"], "change": td["change_amt"]}
-            elif t in price_df.columns:
-                s = price_df[t].dropna()
-                if len(s) >= 2:
-                    prices[t] = {"price": float(s.iloc[-1]),
-                                 "change": float(s.iloc[-1] - s.iloc[-2])}
-                elif len(s) == 1:
-                    prices[t] = {"price": float(s.iloc[-1]), "change": 0.0}
-
-        weights = theme.get("weights", {})
-        n_surge = len(surges)
-        raw_surge = sum(surges.values()) / n_surge if n_surge > 0 else 1.0
-        # 出来高倍率の基準は1.0（変化なし）なので1.0方向に引き戻す
-        avg_surge = round((n_surge * raw_surge + _SHRINKAGE_M * 1.0) / (n_surge + _SHRINKAGE_M), 2) if n_surge > 0 else 0.0
-        if rets and weights:
-            w_sum = sum(_WEIGHT_MULTIPLIER.get(weights.get(t, 2), 1.0) for t in rets)
-            w_total = sum(rets[t] * _WEIGHT_MULTIPLIER.get(weights.get(t, 2), 1.0) for t in rets)
-            raw_ret = w_total / w_sum
-        elif rets:
-            raw_ret = sum(rets.values()) / len(rets)
-        else:
-            raw_ret = 0.0
-        n_ret = len(rets)
-        avg_ret = round((n_ret * raw_ret) / (n_ret + _SHRINKAGE_M), 2) if n_ret > 0 else 0.0
-        result.append({
-            **theme,
-            "avg_surge": avg_surge,
-            "avg_ret": avg_ret,
-            "surges": surges,
-            "returns": rets,
-            "prices": prices,
-        })
-    result.sort(key=lambda x: x["avg_surge"], reverse=True)
-    return result
-
-
-@st.cache_data(show_spinner=False)
-def build_surge_list(surge_data, prefix="sg"):
-    """急騰察知リスト: テーマごとに出来高倍率でランキング表示"""
-    rows = ""
-    for i, t in enumerate(surge_data):
-        avg_surge = t["avg_surge"]
-        avg_ret = t.get("avg_ret", 0.0)
-        s_color = THEME["surge_high"] if avg_surge >= 2.0 else THEME["surge_mid"] if avg_surge >= 1.5 else THEME["muted"]
-        r_color = THEME["up"] if avg_ret >= 0 else THEME["down"]
-        r_arrow = "▲" if avg_ret >= 0 else "▼"
-        r_sign = "+" if avg_ret >= 0 else ""
-        cc = t["cat_color"]
-        r, g, b = hex_to_rgb(cc)
-        tag_style = (
-            f"background:rgba({r},{g},{b},0.12);"
-            f"color:{cc};"
-            f"border:1px solid rgba({r},{g},{b},0.3);"
-        )
-        names = t.get("names", {})
-        prices_d = t.get("prices", {})
-        stocks_html = ""
-        for ticker, sr in sorted(t["surges"].items(), key=lambda x: x[1], reverse=True):
-            stock_ret = t["returns"].get(ticker, 0.0)
-            sc = THEME["surge_high"] if sr >= 2.0 else THEME["surge_mid"] if sr >= 1.5 else THEME["muted"]
-            rc = THEME["up"] if stock_ret >= 0 else THEME["down"]
-            ra = "▲" if stock_ret >= 0 else "▼"
-            rs = "+" if stock_ret >= 0 else ""
-            name_span = (
-                f'<span class="tl-sname">{names[ticker]}</span>'
-                if ticker in names else ""
-            )
-            pinfo = prices_d.get(ticker)
-            price_html = ""
-            if pinfo:
-                price_html = (
-                    f'<span class="tl-price">{fmt_price(pinfo["price"])}</span>'
-                    f'<span class="tl-change">{fmt_change(pinfo["change"])}</span>'
-                )
-            stocks_html += (
-                f'<div class="tl-stock">'
-                f'<span><span class="tl-ticker">{ticker}</span>{name_span}</span>'
-                f'<span class="tl-stock-right">{price_html}'
-                f'<span class="tl-sret" style="color:{rc}">{ra} {rs}{stock_ret:.2f}%</span>'
-                f'<span class="tl-sret" style="color:{sc};margin-left:6px;">{sr:.1f}x</span>'
-                f'</span>'
-                f'</div>'
-            )
-
-        uid = f"{prefix}{i}"
-        rows += (
-            f'<div>'
-            f'  <input type="checkbox" id="{uid}" class="tl-chk">'
-            f'  <label for="{uid}" class="tl-row">'
-            f'    <div class="tl-left">'
-            f'      <div class="tl-badge">{i + 1}</div>'
-            f'      <span class="tl-name">{t["name"]}</span>'
-            f'      <span class="tl-tag" style="{tag_style}">{t["category"]}</span>'
-            f'    </div>'
-            f'    <div class="tl-right">'
-            f'      <span class="tl-ret" style="color:{r_color}">{r_arrow} {r_sign}{avg_ret:.2f}%</span>'
-            f'      <span class="tl-ret" style="color:{s_color};font-size:1rem;margin-left:4px;">{avg_surge:.1f}x</span>'
-            f'      <span class="tl-chevron">&#9660;</span>'
-            f'    </div>'
-            f'  </label>'
-            f'  <div class="tl-panel">{stocks_html}</div>'
-            f'</div>'
-        )
-
-    return f'<div class="tl-wrap">{rows}</div>'
-
-
 # ── 急変動（モメンタム）検出 ─────────────────────────────────────────────────
 
 
@@ -1266,10 +1146,7 @@ def _compute_theme_scores(themes, tachibana_prices):
         rets = {}
         weights = theme.get("weights", {})
         for t in theme["tickers"]:
-            _tok = (tachibana_prices and t in tachibana_prices and tachibana_prices[t]["price"] > 0)
-            if _tok and _op.get(t, 0) > 0:
-                if abs(tachibana_prices[t]["price"] - _op[t]) / _op[t] > 0.5:
-                    _tok = False
+            _tok = _is_tachibana_valid(tachibana_prices, t, _op.get(t, 0))
             if _tok:
                 rets[t] = tachibana_prices[t]["change_pct"]
         if rets and weights:
@@ -1623,8 +1500,6 @@ if st.session_state.dark_mode:
     --accent-hover: #a5b4fc !important;
     --up: #f87171 !important;
     --down: #22d3ee !important;
-    --surge-high: #fbbf24 !important;
-    --surge-mid: #fb923c !important;
 }
 [data-baseweb="tab"]:hover { background: rgba(255,255,255,0.04) !important; }
 [data-testid="stRadio"] label:hover { background: rgba(255,255,255,0.04) !important; }
@@ -1638,8 +1513,6 @@ if st.session_state.dark_mode:
         "down":       "#22d3ee",
         "muted":      "#94a3b8",
         "text_sub":   "#cbd5e0",
-        "surge_high": "#fbbf24",
-        "surge_mid":  "#fb923c",
     }
 else:
     THEME = {
@@ -1647,8 +1520,6 @@ else:
         "down":       "#06b6d4",
         "muted":      "#8a94a6",
         "text_sub":   "#4a5568",
-        "surge_high": "#f59e0b",
-        "surge_mid":  "#fb923c",
     }
 
 
@@ -1703,7 +1574,7 @@ elif _action == _dark_icon:
     st.session_state.dark_mode = not st.session_state.dark_mode
     del st.session_state["header_pills"]
     build_theme_list.clear()
-    build_surge_list.clear()
+
     build_compact_list.clear()
     build_momentum_list.clear()
     build_momentum_compact.clear()
@@ -1743,10 +1614,14 @@ elif _action == "↺":
     # 立花証券キャッシュもクリア
     clear_tachibana_cache()
     build_theme_list.clear()
-    build_surge_list.clear()
+
     build_compact_list.clear()
     build_momentum_list.clear()
     build_momentum_compact.clear()
+    _cc = _compute_cache()
+    for _ck in _cc:
+        _cc[_ck]["key"] = None
+        _cc[_ck]["result"] = None
     st.session_state.pop("show_all_jp", None)
     st.session_state.pop("show_all_us", None)
     st.rerun()
@@ -1811,9 +1686,9 @@ def _periodic_check():
                 _new_url = _load_tachibana_price_url()
                 if _new_url:
                     threading.Thread(target=_tachibana_bg_fetch, args=(all_jp_codes, _new_url), daemon=True).start()
-            else:
+            elif not _tf["prices"]:
                 st.rerun(scope="app")
-        else:
+        elif not _tf["prices"]:
             st.rerun(scope="app")
     elif _tf["fetching"]:
         st.session_state._tachi_was_fetching = True
@@ -1870,7 +1745,8 @@ def _render_jp_tab():
 
     _is_rt      = (period_jp == "Now")  # リアルタイム
     _trading    = is_trading_hours()
-    _use_tachi  = (period_jp in ("Now", "1D")) and _trading and bool(_tachibana_prices)
+    _post_gap   = _is_post_market_gap(_state["fresh_ts"])
+    _use_tachi  = (period_jp in ("Now", "1D")) and (_trading or _post_gap) and bool(_tachibana_prices)
     days_jp     = 2 if _is_rt else JP_PERIODS[period_jp]
     _tachi_for_compute = _tachibana_prices if _use_tachi else None
     # ミックス指標: Now=ざら場中のみ, 1D=前営業日の始値ファイルでもOK
@@ -1895,12 +1771,28 @@ def _render_jp_tab():
             unsafe_allow_html=True,
         )
     else:
-        jp_theme_data = compute_theme_data(
-            JP_THEMES, jp_data, days_jp,
-            tachibana=_tachi_for_compute,
-            use_mixed=_use_mixed,
-            opening_prices=_op_for_compute,
-        )
+        _jp_cache = _compute_cache()["jp"]
+        if _tachi_for_compute:
+            # 立花接続中はキャッシュしない（リアルタイム）
+            jp_theme_data = compute_theme_data(
+                JP_THEMES, jp_data, days_jp,
+                tachibana=_tachi_for_compute,
+                use_mixed=_use_mixed,
+                opening_prices=_op_for_compute,
+            )
+        else:
+            _jp_key = (id(JP_THEMES), id(jp_data), days_jp, _use_mixed, id(_op_for_compute))
+            if _jp_cache["key"] == _jp_key:
+                jp_theme_data = _jp_cache["result"]
+            else:
+                jp_theme_data = compute_theme_data(
+                    JP_THEMES, jp_data, days_jp,
+                    tachibana=None,
+                    use_mixed=_use_mixed,
+                    opening_prices=_op_for_compute,
+                )
+                _jp_cache["key"] = _jp_key
+                _jp_cache["result"] = jp_theme_data
         if order_jp == "▼ ワースト":
             jp_theme_data = list(reversed(jp_theme_data))
         if st.session_state.compact_mode:
@@ -1918,10 +1810,14 @@ def _render_jp_tab():
         datetime.fromtimestamp(_state["fresh_ts"], tz=_JST).strftime("%Y-%m-%d %H:%M")
         if _state["fresh_ts"] > 0 else "取得中..."
     )
-    if _use_mixed and _use_tachi:
-        _price_src = f"ミックス指標：前日比×寄り比（立花証券 {datetime.now(_JST).strftime('%H:%M')}）"
+    if _use_mixed and _use_tachi and _post_gap:
+        _price_src = "ミックス指標：前日比70×寄り比30（立花証券・引け後終値）"
+    elif _use_mixed and _use_tachi:
+        _price_src = f"ミックス指標：前日比70×寄り比30（立花証券 {datetime.now(_JST).strftime('%H:%M')}）"
     elif _use_mixed:
-        _price_src = "ミックス指標：前日比×寄り比（J-Quants + 始値データ）"
+        _price_src = "ミックス指標：前日比70×寄り比30（J-Quants + 始値データ）"
+    elif _use_tachi and _post_gap:
+        _price_src = "立花証券（引け後終値・J-Quants更新待ち）"
     elif _use_tachi:
         _price_src = f"リアルタイム（立花証券 {datetime.now(_JST).strftime('%H:%M')} 更新）"
     elif _is_rt and _tachibana_fetch_state()["fetching"]:
@@ -1931,31 +1827,6 @@ def _render_jp_tab():
     else:
         _price_src = "J-Quants（前日終値）"
     st.caption(f"履歴: {_updated}（J-Quants 24h）　｜　価格: {_price_src}")
-
-
-@st.fragment
-def _render_surge_tab():
-    if jp_volume is None or (isinstance(jp_volume, pd.DataFrame) and jp_volume.empty):
-        st.markdown(
-            f'<p style="color:{THEME["text_sub"]};font-size:0.9rem;margin-top:20px;">'
-            '出来高データがありません。データ更新後に表示されます。</p>',
-            unsafe_allow_html=True,
-        )
-    else:
-        _tachibana_prices = _tachibana_fetch_state()["prices"]
-        _tachi_for_surge = _tachibana_prices if (
-            st.session_state.get("period_jp") == "Now"
-            and is_trading_hours()
-            and bool(_tachibana_prices)
-        ) else None
-        surge_data = compute_surge_data(
-            JP_THEMES, jp_volume, jp_data,
-            tachibana=_tachi_for_surge,
-        )
-        st.markdown(build_surge_list(surge_data, prefix="sg"), unsafe_allow_html=True)
-
-    st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
-    st.caption("出来高倍率 = 直近出来高 / 過去5日平均出来高　｜　J-Quants V2")
 
 
 @st.fragment
@@ -1978,7 +1849,14 @@ def _render_us_tab():
             label_visibility="collapsed", key="order_us",
         )
     days_us = PERIODS[period_us]
-    us_theme_data = compute_theme_data(US_THEMES, us_data, days_us)
+    _us_cache = _compute_cache()["us"]
+    _us_key = (id(US_THEMES), id(us_data), days_us)
+    if _us_cache["key"] == _us_key:
+        us_theme_data = _us_cache["result"]
+    else:
+        us_theme_data = compute_theme_data(US_THEMES, us_data, days_us)
+        _us_cache["key"] = _us_key
+        _us_cache["result"] = us_theme_data
     if order_us == "▼ ワースト":
         us_theme_data = list(reversed(us_theme_data))
     if st.session_state.compact_mode:
@@ -2090,14 +1968,12 @@ def _render_momentum_tab():
 
 
 # ── タブ作成 & fragment 呼び出し ──────────────────────────────────────────────
-tab_jp, tab_surge, tab_momentum, tab_us = st.tabs([
-    "🇯🇵 日本株", "🔥 急騰察知", "⚡ 急変動", "🇺🇸 米国株",
+tab_jp, tab_momentum, tab_us = st.tabs([
+    "🇯🇵 日本株", "⚡ 急変動", "🇺🇸 米国株",
 ])
 
 with tab_jp:
     _render_jp_tab()
-with tab_surge:
-    _render_surge_tab()
 with tab_momentum:
     _render_momentum_tab()
 with tab_us:
