@@ -295,10 +295,10 @@ _US_CACHE_FILE = Path(".streamlit") / "cache_us_prices.json"
 @st.cache_resource
 def _us_state():
     """プロセス内メモリキャッシュ: 当日分を保持"""
-    return {"df": None, "date": "", "fetching": False, "progress": ""}
+    return {"df": None, "date": "", "fetching": False, "progress": "", "cancel": False}
 
 
-def _us_cache_load() -> "pd.DataFrame | None":
+def _us_cache_load(allow_partial: bool = False) -> "pd.DataFrame | None":
     """JSONファイルから読み込み。当日分でなければ None を返す。"""
     try:
         with open(_US_CACHE_FILE, encoding="utf-8") as f:
@@ -331,35 +331,63 @@ def _us_cache_save(df: pd.DataFrame):
         pass
 
 
+def _us_cache_merge(new_df: pd.DataFrame):
+    """既存キャッシュに新しい銘柄データをマージして保存。"""
+    existing = _us_cache_load(allow_partial=True)
+    if existing is not None and not existing.empty:
+        merged = pd.concat([existing, new_df], axis=1)
+        merged = merged.loc[:, ~merged.columns.duplicated(keep="last")]
+    else:
+        merged = new_df
+    _us_cache_save(merged)
+    return merged
+
+
 def _fetch_us_yf(tickers: tuple) -> pd.DataFrame:
-    """yfinance で銘柄を分割取得（レート制限回避）。"""
+    """yfinance で銘柄を分割取得（レート制限回避）。途中保存・中断・再開対応。"""
     start = datetime.now(_JST) - timedelta(days=45)
     state = _us_state()
     batch_size = 50
-    all_dfs = []
-    ticker_list = list(tickers)
-    total_batches = (len(ticker_list) + batch_size - 1) // batch_size
+
+    # 既存キャッシュから取得済み銘柄を特定し、未取得分だけ取得
+    cached_df = _us_cache_load(allow_partial=True)
+    cached_tickers = set(cached_df.columns) if cached_df is not None else set()
+    remaining = [t for t in tickers if t not in cached_tickers]
+
+    if not remaining:
+        return cached_df if cached_df is not None else pd.DataFrame(columns=list(tickers))
+
+    total = len(list(tickers))
+    done_count = total - len(remaining)
+    total_batches = (len(remaining) + batch_size - 1) // batch_size
 
     for b in range(total_batches):
-        batch = ticker_list[b * batch_size : (b + 1) * batch_size]
-        state["progress"] = f"{b * batch_size}/{len(ticker_list)}"
+        # 中断チェック
+        if state.get("cancel"):
+            break
+        batch = remaining[b * batch_size : (b + 1) * batch_size]
+        state["progress"] = f"{done_count + b * batch_size}/{total}"
         for attempt in range(3):
+            if state.get("cancel"):
+                break
             try:
                 raw = yf.download(batch, start=start, auto_adjust=True, progress=False, threads=True)
                 if raw.empty:
                     break
                 close = raw["Close"] if len(batch) > 1 else raw["Close"].to_frame(batch[0])
                 if not close.empty:
-                    all_dfs.append(close)
+                    # バッチごとにキャッシュファイルにマージ保存
+                    cached_df = _us_cache_merge(close)
+                    done_count += len(batch)
                 break
             except Exception:
                 time.sleep(5)
-        if b < total_batches - 1:
+        if b < total_batches - 1 and not state.get("cancel"):
             time.sleep(2)
 
-    if all_dfs:
-        return pd.concat(all_dfs, axis=1)
-    return pd.DataFrame(columns=list(tickers))
+    # 最終結果を返す
+    final = _us_cache_load(allow_partial=True)
+    return final if final is not None else pd.DataFrame(columns=list(tickers))
 
 
 def _us_bg_fetch(tickers):
@@ -368,6 +396,7 @@ def _us_bg_fetch(tickers):
     if state["fetching"]:
         return
     state["fetching"] = True
+    state["cancel"] = False
     try:
         df = _fetch_us_yf(tickers)
         if not df.empty:
@@ -377,6 +406,7 @@ def _us_bg_fetch(tickers):
     finally:
         state["fetching"] = False
         state["progress"] = ""
+        state["cancel"] = False
 
 
 # ── データ取得（日本株・J-Quants V2） ─────────────────────────────────────────
@@ -1442,12 +1472,20 @@ _us = _us_state()
 _today_str = datetime.now(_JST).strftime("%Y-%m-%d")
 if _us["df"] is not None and _us["date"] == _today_str:
     us_data = _us["df"]
+    # メモリにデータがあっても全銘柄揃っていなければ裏で残りを取得
+    _us_missing = set(all_us_tickers) - set(us_data.columns)
+    if _us_missing and not _us["fetching"]:
+        threading.Thread(target=_us_bg_fetch, args=(all_us_tickers,), daemon=True).start()
 else:
     _file_df = _us_cache_load()
     if _file_df is not None:
         us_data = _file_df
         _us["df"] = _file_df
         _us["date"] = _today_str
+        # ファイルキャッシュが部分的なら残りを取得
+        _us_missing = set(all_us_tickers) - set(_file_df.columns)
+        if _us_missing and not _us["fetching"]:
+            threading.Thread(target=_us_bg_fetch, args=(all_us_tickers,), daemon=True).start()
     else:
         us_data = pd.DataFrame(columns=list(all_us_tickers))
         if not _us["fetching"]:
@@ -1602,15 +1640,21 @@ elif _tachi_has_secrets and _action == _tachi_icon:
 elif _action == "↺":
     del st.session_state["header_pills"]
     reload_jp_themes()
-    # 米国株データをバックグラウンドで再取得（ファイルキャッシュも削除）
+    # 米国株データをバックグラウンドで再取得（取得中なら中断→再開）
     _us["df"] = None
     _us["date"] = ""
     try:
         _US_CACHE_FILE.unlink(missing_ok=True)
     except Exception:
         pass
-    if not _us["fetching"]:
-        threading.Thread(target=_us_bg_fetch, args=(all_us_tickers,), daemon=True).start()
+    if _us["fetching"]:
+        _us["cancel"] = True
+        # 中断を待つ（最大5秒）
+        for _ in range(50):
+            if not _us["fetching"]:
+                break
+            time.sleep(0.1)
+    threading.Thread(target=_us_bg_fetch, args=(all_us_tickers,), daemon=True).start()
     # 立花証券キャッシュもクリア
     clear_tachibana_cache()
     build_theme_list.clear()
